@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MatrixCV</title>
+    <!-- 引入Element-UI样式，锁定版本 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.9.1/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="stylesheets/index.css">
+</head>
+
+<body>
+    <div id="app">
+
+        <div class="line"></div>
+        <el-menu :default-active="activeIndex2" class="el-menu-demo" mode="horizontal" @select="handleSelect"
+            background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
+            <el-menu-item index="1">处理中心</el-menu-item>
+            <el-submenu index="2">
+                <template slot="title">我的工作台</template>
+                <el-menu-item index="2-1">选项1</el-menu-item>
+                <el-menu-item index="2-2">选项2</el-menu-item>
+                <el-menu-item index="2-3">选项3</el-menu-item>
+                <el-submenu index="2-4">
+                    <template slot="title">选项4</template>
+                    <el-menu-item index="2-4-1">选项1</el-menu-item>
+                    <el-menu-item index="2-4-2">选项2</el-menu-item>
+                    <el-menu-item index="2-4-3">选项3</el-menu-item>
+                </el-submenu>
+            </el-submenu>
+            <el-menu-item index="3" disabled>消息中心</el-menu-item>
+            <el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>
+        </el-menu>
+        <el-container>
+            <el-header>
+
+            </el-header>
+            <el-container>
+                <el-aside>
+
+                </el-aside>
+                <el-main>
+
+                </el-main>
+            </el-container>
+        </el-container>
+    </div>
+</body>
+
+<!-- 引入本地Vue开发环境版本，包含了有帮助的命令行警告 -->
+<script src="javascripts/vue.js"></script>
+<!-- Vue开发环境版本，包含了有帮助的命令行警告 -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+<!-- Vue生产环境版本，优化了尺寸和速度 -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+
+<!-- 引入Element-UI组件库，锁定版本 -->
+<script src="https://unpkg.com/element-ui@2.9.1/lib/index.js"></script>
+
+<!-- 本页面的包含Vue内容的Js，放在Vue后面 -->
+<script src="javascripts/index.js"></script>
+
+</html>

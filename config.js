@@ -1,0 +1,1 @@
+const secret = 'hardcoding-secret-sysu';

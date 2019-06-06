@@ -1,38 +1,49 @@
 var express = require('express');
 
-const jwt= require('jsonwebtoken');
-var expressJwt = require('express-jwt');
+// const jwt= require('jsonwebtoken');
+// var expressJwt = require('express-jwt');
 
 var app = express();
 
-const secret = 'hardcoding-secret-sysu';
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 
-function generateToken() {
-	return jwt.sign({
-		name: 'Everyone'
-	}, secret, {
-		expiresIn:  360 //秒到期时间
-	});
-}
+var api = require('./api/api');
+
+app.use(cookieParser());
+app.use(bodyParser.json())
+// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(__dirname + '/public'));
+
+app.use('/api', api);
+
+
+// function generateToken() {
+// 	return jwt.sign({
+// 		name: 'Everyone'
+// 	}, secret, {
+// 		expiresIn:  360 //秒到期时间
+// 	});
+// }
 
 app.get('/', function (req, res) {
-	  res.send('Hello World! \n<a href="/getToken">Get Token</a>\n<a href="/admin">I am Admin.</a>');
+	  res.send('Hello World!\n');
 });
 
 //定义一个接口，返回token给客户端
-app.get('/getToken', function(req, res) {
-    res.json({
-        token: generateToken()
-    });
-});
+// app.get('/getToken', function(req, res) {
+//     res.json({
+//         token: generateToken()
+//     });
+// });
 
-app.get('/admin',
-  expressJwt({ secret: secret }),
-  function(req, res) {
-    if (!req.user.admin) return res.sendStatus(401);
-	res.sendStatus(200);
-	res.send('Now you are admin.');
-  });
+// app.get('/admin',
+//   expressJwt({ secret: secret }),
+//   function(req, res) {
+//     if (!req.user.admin) return res.sendStatus(401);
+// 	res.sendStatus(200);
+// 	res.send('Now you are admin.');
+//   });
 
 app.listen(3000, function () {
 	  console.log('Example app listening on port 3000!');

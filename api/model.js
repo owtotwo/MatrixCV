@@ -1,13 +1,10 @@
-// cv.js文件
-
-// 引入lowdb模块
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-
 const adapter = new FileSync('db.json');
 const db = low(adapter);
 
-/*
+const shortid = require('shortid')
+
 const form = {
     "admin": [
         { "id": "Admin", "password": "admin" },
@@ -22,7 +19,7 @@ const form = {
     ],
     "cv": [
         {
-            "cvid": 1,
+            "id": 1,
             "content":
             {
                 "姓名": "李老八",
@@ -34,7 +31,7 @@ const form = {
                 "校园活动经验": "无",
                 "自身技能": "无",
                 "自我评价": "无",
-                "附件简历": "某个/路径/下的文件"
+                "附件简历": "attachmentId"
             }
         }
     ],
@@ -47,14 +44,45 @@ const form = {
             "投递时间": "UTC格式的时间",
             "环节状态": "待处理/面试中/已结束/已通过"
         }
+    ],
+    "attachment": [
+        {
+            "id": "ABC",
+            "filepath": "某个/路径/下的文件"
+        }
     ]
 };
-*/
 
 // Set some defaults (required if your JSON file is empty)
 db.defaults({ admin: [ {'id':'admin','password':'admin'} ], user: [], cv: [], application: [ ] })
   .write();
 
+const cvModel = {
+    getCvFromId: function(cvid) {
+        return db.get('cv')
+            .find({ id: cvid })
+            .value();
+    },
+    setCvFromId: function(cvid, cvContent) {
+        db.get('cv')
+            .find({ id: cvid })
+            .assign({ content: cvContent })
+            .write();
+    },
+    createCv: function(content, attachmentFilePath) {
+        console.log('createCv: ', content);
+        var newCvId = shortid.generate();
+        const result = db.get('cv')
+            .push({ id: newCvId, content: content })
+            .write();
+        return newCvId;
+    },
+    deleteCvFromId: function(cvid) {
+        db.get('cv')
+            .remove({ id: cvid })
+            .write();
+    }
+}
 // // Add a user
 // db.get('users')
 //   .push({ id: 1, title: 'lowdb is awesome'})
@@ -68,5 +96,6 @@ db.defaults({ admin: [ {'id':'admin','password':'admin'} ], user: [], cv: [], ap
 // db.update('count', n => n + 1)
 //   .write()
 
-//导出model模块
-const Hero = module.exports = mongoose.model('hero',heroSchema);
+module.exports = {
+    cv: cvModel,
+};
