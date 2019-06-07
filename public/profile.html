@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MatrixCV - Profile</title>
+    <link rel="shortcut icon" type="image/png" href="images/favicon.png" />
+    <!-- 引入Element-UI样式，锁定版本 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.9.1/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="stylesheets/profile.css">
+</head>
+
+<body>
+    <div id="app">
+        <div id="page-menu">
+            <el-menu class="el-menu-demo" mode="horizontal" default-active="4">
+                <el-menu-item class="demo-image" style="vertical-align: sub; margin: 0">
+                    <el-image style="width: 140px; height: 58px" src="images/logo.png" fit="contain">
+                    </el-image>
+                </el-menu-item>
+                <el-menu-item index="4" style="float: right;">
+                    <el-link href="/profile" target="_blank" :underline="false">个人中心</el-link>
+                </el-menu-item>
+                <el-menu-item index="3" style="float: right;" disabled>关于我们</el-menu-item>
+                <el-menu-item index="2" style="float: right;">招聘岗位</el-menu-item>
+                <el-menu-item index="1" style="float: right;">主页</el-menu-item>
+            </el-menu>
+        </div>
+        <el-container>
+            <el-main id="page-content">
+                <el-row :gutter="20">
+                    <el-col :span="16">
+                        <el-card id="my-cv" class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>我的简历</span>
+                                <el-button style="float: right; padding: 3px 0" type="text">编辑简历</el-button>
+                            </div>
+                            <div v-for="o in 4" :key="o" class="text item">
+                                {{'列表内容 ' + o }}
+                            </div>
+                        </el-card>
+                        <el-card id="new-cv" class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>新建简历</span>
+                            </div>
+                            <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px"
+                                class="demo-ruleForm">
+                                <!-- <el-form-item label="活动名称" prop="name">
+                                    <el-input v-model="ruleForm.name"></el-input>
+                                </el-form-item> -->
+                                <el-form-item label="姓名" prop="name">
+                                    <el-input v-model="ruleForm.name"></el-input>
+                                </el-form-item>
+                                <el-form-item label="年级" prop="grade">
+                                    <el-input v-model="ruleForm.grade"></el-input>
+                                </el-form-item>
+                                <el-form-item label="院系" prop="college">
+                                    <el-input v-model="ruleForm.college"></el-input>
+                                </el-form-item>
+                                <el-form-item label="专业" prop="major">
+                                    <el-input v-model="ruleForm.major"></el-input>
+                                </el-form-item>
+                                <el-form-item label="活动区域" prop="region">
+                                    <el-select v-model="ruleForm.region" placeholder="请选择活动区域">
+                                        <el-option label="区域一" value="shanghai"></el-option>
+                                        <el-option label="区域二" value="beijing"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="活动时间" required>
+                                    <el-col :span="11">
+                                        <el-form-item prop="date1">
+                                            <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.date1"
+                                                style="width: 100%;"></el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col class="line" :span="2">-</el-col>
+                                    <el-col :span="11">
+                                        <el-form-item prop="date2">
+                                            <el-time-picker placeholder="选择时间" v-model="ruleForm.date2"
+                                                style="width: 100%;"></el-time-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-form-item>
+                                <el-form-item label="即时配送" prop="delivery">
+                                    <el-switch v-model="ruleForm.delivery"></el-switch>
+                                </el-form-item>
+                                <el-form-item label="活动性质" prop="type">
+                                    <el-checkbox-group v-model="ruleForm.type">
+                                        <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
+                                        <el-checkbox label="地推活动" name="type"></el-checkbox>
+                                        <el-checkbox label="线下主题活动" name="type"></el-checkbox>
+                                        <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
+                                    </el-checkbox-group>
+                                </el-form-item>
+                                <el-form-item label="特殊资源" prop="resource">
+                                    <el-radio-group v-model="ruleForm.resource">
+                                        <el-radio label="线上品牌商赞助"></el-radio>
+                                        <el-radio label="线下场地免费"></el-radio>
+                                    </el-radio-group>
+                                </el-form-item>
+                                <el-form-item label="活动形式" prop="desc">
+                                    <el-input type="textarea" v-model="ruleForm.desc"></el-input>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+                                    <el-button @click="resetForm('ruleForm')">重置</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-card id="my-application" class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>我的投递</span>
+                            </div>
+                            <div v-for="o in 4" :key="o" class="text item">
+                                {{'列表内容 ' + o }}
+                            </div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+                <p style="text-align: center;">
+                    <el-button @click="">
+                        投递简历
+                    </el-button>
+                </p>
+            </el-main>
+            <el-footer id="page-footer">
+                <small>&copy; Copyright 2019 by owtotwo</small>
+            </el-footer>
+        </el-container>
+    </div>
+</body>
+
+<!-- 引入本地Vue开发环境版本，包含了有帮助的命令行警告 -->
+<script src="javascripts/vue.js"></script>
+<!-- Vue开发环境版本，包含了有帮助的命令行警告 -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+<!-- Vue生产环境版本，优化了尺寸和速度 -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+
+<!-- 引入Element-UI组件库，锁定版本 -->
+<script src="https://unpkg.com/element-ui@2.9.1/lib/index.js"></script>
+
+<!-- 本页面的包含Vue内容的Js，放在Vue后面 -->
+<script src="javascripts/profile.js"></script>
+
+</html>

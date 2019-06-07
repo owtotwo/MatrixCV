@@ -13,20 +13,23 @@
 <body>
     <div id="app">
         <div id="page-menu">
-            <el-menu class="el-menu-demo" mode="horizontal">
+            <el-menu class="el-menu-demo" mode="horizontal" default-active="1">
                 <el-menu-item class="demo-image" style="vertical-align: sub; margin: 0">
                     <el-image style="width: 140px; height: 58px" src="images/logo.png" fit="contain">
                     </el-image>
                 </el-menu-item>
-                <el-menu-item index="4" style="float: right;"><a href="/login" target="_blank">登录</a></el-menu-item>
+                <el-menu-item index="4" style="float: right;">
+                    <el-link href="/login" target="_blank" :underline="false">登录</el-link>
+                </el-menu-item>
                 <el-menu-item index="3" style="float: right;" disabled>关于我们</el-menu-item>
                 <el-menu-item index="2" style="float: right;">招聘岗位</el-menu-item>
+                <el-menu-item index="1" style="float: right;">主页</el-menu-item>
             </el-menu>
         </div>
         <template>
             <div class="block">
                 <el-carousel id="ads-carousel" height="250px">
-                    <el-carousel-item v-for="item in 3" :key="item">
+                    <el-carousel-item v-for="item in 4" :key="item">
                         <!-- <h3 class="small">{{ item }}</h3> -->
                     </el-carousel-item>
                 </el-carousel>
@@ -59,8 +62,11 @@
                                     </el-card>
                                 </div>
                                 <el-row>
-                                    <el-button style="float: right; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)">投递简历
+                                    <el-button @click="visible = true" style="float: right; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)">投递简历
                                     </el-button>
+        <el-dialog :visible.sync="visible" title="Hello">
+            <p>Try {{ message }} Element</p>
+        </el-dialog>
                                 </el-row>
                             </el-card>
                         </el-tab-pane>

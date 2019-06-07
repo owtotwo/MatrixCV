@@ -1,0 +1,69 @@
+body {
+    margin: 0px auto;
+    max-width: 1024px;
+    align-content: center;
+}
+
+#page-content {
+    margin: 0;
+    padding: 20px 10px;
+}
+
+#page-content .el-row {
+    margin-bottom: 20px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+}
+
+#page-content .el-col {
+    border-radius: 4px;
+}
+
+#new-cv .text {
+    font-size: 14px;
+  }
+
+#new-cv .item {
+    margin-bottom: 18px;
+}
+
+#new-cv .clearfix:before,
+#new-cv .clearfix:after {
+    display: table;
+    content: "";
+}
+
+#new-cv .clearfix:after {
+    clear: both
+}
+
+#new-cv .box-card {
+    width: 480px;
+}
+
+#my-cv .text {
+    font-size: 14px;
+  }
+
+#my-cv .item {
+    margin-bottom: 18px;
+}
+
+#my-cv .clearfix:before,
+#my-cv .clearfix:after {
+    display: table;
+    content: "";
+}
+
+#my-cv .clearfix:after {
+    clear: both
+}
+
+#my-cv .box-card {
+    width: 480px;
+}
+
+#page-footer {
+    text-align: center;
+}
