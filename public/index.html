@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>MatrixCV</title>
+    <link rel="shortcut icon" type="image/png" href="images/favicon.png" />
     <!-- 引入Element-UI样式，锁定版本 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui@2.9.1/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="stylesheets/index.css">
@@ -11,38 +12,67 @@
 
 <body>
     <div id="app">
-
-        <div class="line"></div>
-        <el-menu :default-active="activeIndex2" class="el-menu-demo" mode="horizontal" @select="handleSelect"
-            background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
-            <el-menu-item index="1">处理中心</el-menu-item>
-            <el-submenu index="2">
-                <template slot="title">我的工作台</template>
-                <el-menu-item index="2-1">选项1</el-menu-item>
-                <el-menu-item index="2-2">选项2</el-menu-item>
-                <el-menu-item index="2-3">选项3</el-menu-item>
-                <el-submenu index="2-4">
-                    <template slot="title">选项4</template>
-                    <el-menu-item index="2-4-1">选项1</el-menu-item>
-                    <el-menu-item index="2-4-2">选项2</el-menu-item>
-                    <el-menu-item index="2-4-3">选项3</el-menu-item>
-                </el-submenu>
-            </el-submenu>
-            <el-menu-item index="3" disabled>消息中心</el-menu-item>
-            <el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>
-        </el-menu>
+        <div id="page-menu">
+            <el-menu class="el-menu-demo" mode="horizontal">
+                <el-menu-item class="demo-image" style="vertical-align: sub; margin: 0">
+                    <el-image style="width: 140px; height: 58px" src="images/logo.png" fit="contain">
+                    </el-image>
+                </el-menu-item>
+                <el-menu-item index="4" style="float: right;"><a href="/login" target="_blank">登录</a></el-menu-item>
+                <el-menu-item index="3" style="float: right;" disabled>关于我们</el-menu-item>
+                <el-menu-item index="2" style="float: right;">招聘岗位</el-menu-item>
+            </el-menu>
+        </div>
+        <template>
+            <div class="block">
+                <el-carousel id="ads-carousel" height="250px">
+                    <el-carousel-item v-for="item in 3" :key="item">
+                        <!-- <h3 class="small">{{ item }}</h3> -->
+                    </el-carousel-item>
+                </el-carousel>
+            </div>
+        </template>
         <el-container>
-            <el-header>
-
-            </el-header>
-            <el-container>
-                <el-aside>
-
-                </el-aside>
-                <el-main>
-
-                </el-main>
-            </el-container>
+            <el-main>
+                <template>
+                    <el-tabs id="job-detial" tab-position="left" style="height: 500px; margin: 30px 0;">
+                        <el-tab-pane label="用户管理">
+                            <el-card class="box-card">
+                                <div slot="header" class="clearfix">
+                                    <span>用户管理</span>
+                                    <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+                                </div>
+                                <div class="text item">
+                                    <h4>岗位描述:</h4>
+                                    <el-card class="box-card">
+                                        <p>
+                                            本岗位是以吃为主。
+                                        </p>
+                                    </el-card>
+                                </div>
+                                <div class="text item">
+                                    <h4>岗位要求:</h4>
+                                    <el-card class="box-card">
+                                        <p>
+                                            能吃就行。
+                                        </p>
+                                    </el-card>
+                                </div>
+                                <el-row>
+                                    <el-button style="float: right; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)">投递简历
+                                    </el-button>
+                                </el-row>
+                            </el-card>
+                        </el-tab-pane>
+                        <el-tab-pane label="配置管理">配置管理</el-tab-pane>
+                        <el-tab-pane label="角色管理">角色管理</el-tab-pane>
+                        <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
+                    </el-tabs>
+                </template>
+            </el-main>
+            <el-footer id="page-footer">
+                <small>&copy; Copyright 2019 by owtotwo</small>
+            </el-footer>
         </el-container>
     </div>
 </body>

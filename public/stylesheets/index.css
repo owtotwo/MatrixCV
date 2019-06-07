@@ -1,3 +1,35 @@
 body {
-    margin: 0px;
+    margin: 0px auto;
+    max-width: 1024px;
+    align-content: center;
+}
+
+.el-carousel__item:nth-child(2n) {
+    background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n+1) {
+    background-color: #d3dce6;
+}
+
+#page-footer {
+    text-align: center;
+}
+
+#job-detial .text {
+    font-size: 14px;
+}
+
+#job-detial .item {
+    margin-bottom: 18px;
+}
+
+#job-detial .clearfix:before,
+#job-detial .clearfix:after {
+    display: table;
+    content: "";
+}
+
+#job-detial .clearfix:after {
+    clear: both
 }
