@@ -1,42 +1,26 @@
 var app = new Vue({
     el: '#app',
     data: {
-        visible: false,
-        message: 'Hello Vue!',
+        // 投递表单弹出框的弹出trigger
         dialogFormVisible: false,
+        // 选择投递的岗位的引用
         positionSelected: {},
+        // 从服务器获取的岗位列表
         positionList: [
             {
-                name: '前端',
-                description: '切图狗',
-                requirement: '熟练使用Javascript',
-                place: '数据科学与计算机学院楼A302实验室',
+                name: '前端（假）',
+                description: '切图狗（假）',
+                requirement: '熟练使用Javascript（假）',
+                place: '数据科学与计算机学院楼A302实验室（假）',
             },
             {
-                name: '服务端',
-                description: '就是捣鼓服务器的',
-                requirement: '熟练使用php',
-                place: '数据科学与计算机学院楼A302实验室',
-            },
-            {
-                name: '后台',
-                description: '实话说我也不知道跟服务端区别是啥',
-                requirement: '熟练使用Java, Tomcat, Apache',
-                place: '数据科学与计算机学院楼A302实验室',
-            },
-            {
-                name: '产品经理',
-                description: '产品狗没啥好说的',
-                requirement: '熟练使用Sketch, 墨刀',
-                place: '数据科学与计算机学院楼A302实验室',
-            },
-            {
-                name: '产品',
-                description: '准时下班产品狗',
-                requirement: '熟练使用Axure',
-                place: '数据科学与计算机学院楼A302实验室',
+                name: '服务端（假）',
+                description: '就是捣鼓服务器的（假）',
+                requirement: '熟练使用php（假）',
+                place: '数据科学与计算机学院楼A302实验室（假）',
             }
         ],
+        // 带验证的投递表单值
         ruleForm: {
             name: '',
             positionName: '',
@@ -44,6 +28,7 @@ var app = new Vue({
             freeTime: '',
             remark: ''
         },
+        // 验证规则
         rules: {
             name: [
                 { required: true, message: '请输入投递人姓名', trigger: 'blur' },
@@ -59,8 +44,28 @@ var app = new Vue({
             ]
         }
     },
+    mounted() {
+        axios
+            .get('/api/position')
+            .then(response => {
+                console.log('已收到');
+                console.log(response);
+                var data = response.data;
+                if (data.state == 'success') {
+                    this.positionList = data.positionList;
+                } else if (data.state == 'fail') {
+                    this.$message.error('从服务器获取岗位列表失败');
+                } else {
+                    return;
+                }
+            })
+            .catch(error => this.$message.error(error))
+            .finally(() => this.loading = false)
+    },
     methods: {
+        // 点击投递按钮后调用，需要在登录的情况下，已有简历，才能弹出 投递表单弹出框
         deliver(post) {
+            // 若未登录
             if (!this.isLogined()) {
                 this.$alert('请先登录后操作', '未登录', {
                     confirmButtonText: '登录',
@@ -70,6 +75,7 @@ var app = new Vue({
                 });
                 return true;
             }
+            // 若未有简历
             if (!this.hasCV()) {
                 this.$alert('请先进入个人中心创建简历', '未创建简历', {
                     confirmButtonText: '转至个人中心',
@@ -79,24 +85,30 @@ var app = new Vue({
                 });
                 return true;
             }
-            if (typeof(post) !== undefined) {
-                this.$alert(`您要投递的岗位是【${post.name}】`, '提示', {
-                    confirmButtonText: '确定',
-                    callback: action => {
-                        if (action == 'cancel') return;
-                        this.positionSelected = post;
-                        this.ruleForm.positionName = this.positionSelected.name;
-                        this.ruleForm.place = this.positionSelected.place;
-                        // 关闭表单弹出框
-                        this.dialogFormVisible = true;
-                    }
-                });
-                return true;
+            // 若post参数没正确传入
+            if (typeof (post) === 'undefined') {
+                this.$message.error('呃噢，好像post参数没正确传入哦~');
+                return false;
             }
-            this.$message.error('哦噢，好像不符合三种情况~');
-            return false;
+            // 弹出表单填写框
+            this.$alert(`您要投递的岗位是【${post.name}】`, '提示', {
+                confirmButtonText: '确定',
+                callback: action => {
+                    if (action == 'cancel') return;
+                    // 引用相应的岗位object
+                    this.positionSelected = post;
+                    // 填入面试岗位和面试地点到表单里（不可更改）
+                    this.ruleForm.positionName = this.positionSelected.name;
+                    this.ruleForm.place = this.positionSelected.place;
+                    // 关闭表单弹出框
+                    this.dialogFormVisible = true;
+                }
+            });
+            return true;
         },
+        // 判断是否登录
         isLogined() {
+
             return true;
         },
         hasCV() {

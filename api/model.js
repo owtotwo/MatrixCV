@@ -50,12 +50,27 @@ const form = {
             "id": "ABC",
             "filepath": "某个/路径/下的文件"
         }
+    ],
+    "position": [
+        {
+            "name": "岗位名称",
+            "description": "岗位描述",
+            "requirement": "岗位要求",
+            "place": "面试地点"
+        }
     ]
 };
 
 // Set some defaults (required if your JSON file is empty)
-db.defaults({ admin: [ {'id':'admin','password':'admin'} ], user: [], cv: [], delivery: [ ] })
-  .write();
+db.defaults({
+        admin: [ {'id':'admin','password':'admin'} ],
+        user: [],
+        cv: [],
+        delivery: [],
+        attachment: [],
+        position: []
+    })
+    .write();
 
 const cvModel = {
     getCvFromId: function(cvid) {
@@ -83,6 +98,13 @@ const cvModel = {
             .write();
     }
 }
+
+const positionModel = {
+    getPositionList: function() {
+        return db.get('position')
+            .value();
+    }
+}
 // // Add a user
 // db.get('users')
 //   .push({ id: 1, title: 'lowdb is awesome'})
@@ -98,4 +120,5 @@ const cvModel = {
 
 module.exports = {
     cv: cvModel,
+    position: positionModel
 };
