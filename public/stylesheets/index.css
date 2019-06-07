@@ -24,7 +24,7 @@ body {
     margin-bottom: 18px;
 }
 
-#job-detial .clearfix:before,
+/* #job-detial .clearfix:before,
 #job-detial .clearfix:after {
     display: table;
     content: "";
@@ -32,7 +32,7 @@ body {
 
 #job-detial .clearfix:after {
     clear: both
-}
+} */
 
 .line {
     height: 1px;

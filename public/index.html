@@ -41,17 +41,16 @@
             <el-main>
                 <template>
                     <el-tabs id="job-detial" tab-position="left" style="height: 500px; margin: 30px 0;">
-                        <el-tab-pane label="用户管理">
+                        <el-tab-pane v-for="post in positionList" :label="post.name">
                             <el-card class="box-card">
-                                <div slot="header" class="clearfix">
-                                    <span>用户管理</span>
-                                    <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+                                <div slot="header">
+                                    <span>{{post.name}}</span>
                                 </div>
                                 <div class="text item">
                                     <h4>岗位描述:</h4>
                                     <el-card class="box-card">
                                         <p>
-                                            本岗位是以吃为主。
+                                            {{post.description}}
                                         </p>
                                     </el-card>
                                 </div>
@@ -59,32 +58,29 @@
                                     <h4>岗位要求:</h4>
                                     <el-card class="box-card">
                                         <p>
-                                            能吃就行。
+                                            {{post.requirement}}
                                         </p>
                                     </el-card>
                                 </div>
                                 <el-row>
-                                    <el-button @click="tryDeliver"
+                                    <el-button @click="deliver(post)"
                                         style="float: right; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)">投递简历
                                     </el-button>
                                 </el-row>
                             </el-card>
                         </el-tab-pane>
-                        <el-tab-pane label="配置管理">配置管理</el-tab-pane>
-                        <el-tab-pane label="角色管理">角色管理</el-tab-pane>
-                        <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
                     </el-tabs>
                 </template>
                 <!-- Form -->
-                <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button>
+                <!-- <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
 
                 <el-dialog title="面试安排" :visible.sync="dialogFormVisible">
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="110px">
                         <el-form-item label="投递人姓名" prop="name">
                             <el-input v-model="ruleForm.name"></el-input>
                         </el-form-item>
-                        <el-form-item label="面试岗位" prop="position">
-                            <el-input v-model="ruleForm.position" :readonly="true"></el-input>
+                        <el-form-item label="面试岗位" prop="positionName">
+                            <el-input v-model="ruleForm.positionName" :readonly="true"></el-input>
                         </el-form-item>
                         <el-form-item label="面试地点" prop="place">
                             <el-input v-model="ruleForm.place" :readonly="true"></el-input>
@@ -97,6 +93,7 @@
                         </el-form-item>
                     </el-form>
                     <div slot="footer" class="dialog-footer">
+                        <span style="margin: 0 30px">* 一经提交不能再修改</span>
                         <el-button @click="dialogFormVisible = false">取 消</el-button>
                         <el-button type="primary" @click="submitForm('ruleForm')">投 递</el-button>
                     </div>

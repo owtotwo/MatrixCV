@@ -4,9 +4,42 @@ var app = new Vue({
         visible: false,
         message: 'Hello Vue!',
         dialogFormVisible: false,
+        positionSelected: {},
+        positionList: [
+            {
+                name: '前端',
+                description: '切图狗',
+                requirement: '熟练使用Javascript',
+                place: '数据科学与计算机学院楼A302实验室',
+            },
+            {
+                name: '服务端',
+                description: '就是捣鼓服务器的',
+                requirement: '熟练使用php',
+                place: '数据科学与计算机学院楼A302实验室',
+            },
+            {
+                name: '后台',
+                description: '实话说我也不知道跟服务端区别是啥',
+                requirement: '熟练使用Java, Tomcat, Apache',
+                place: '数据科学与计算机学院楼A302实验室',
+            },
+            {
+                name: '产品经理',
+                description: '产品狗没啥好说的',
+                requirement: '熟练使用Sketch, 墨刀',
+                place: '数据科学与计算机学院楼A302实验室',
+            },
+            {
+                name: '产品',
+                description: '准时下班产品狗',
+                requirement: '熟练使用Axure',
+                place: '数据科学与计算机学院楼A302实验室',
+            }
+        ],
         ruleForm: {
             name: '',
-            position: '',
+            positionName: '',
             place: '',
             freeTime: '',
             remark: ''
@@ -25,11 +58,10 @@ var app = new Vue({
                 { max: 140, message: '长度小于 140 个字符', trigger: 'blur' }
             ]
         }
-        // formLabelWidth: '120px'
     },
     methods: {
-        tryDeliver(position) {
-            if (this.isLogined()) {
+        deliver(post) {
+            if (!this.isLogined()) {
                 this.$alert('请先登录后操作', '未登录', {
                     confirmButtonText: '登录',
                     callback: action => {
@@ -38,7 +70,7 @@ var app = new Vue({
                 });
                 return true;
             }
-            if (this.hasCV()) {
+            if (!this.hasCV()) {
                 this.$alert('请先进入个人中心创建简历', '未创建简历', {
                     confirmButtonText: '转至个人中心',
                     callback: action => {
@@ -47,10 +79,15 @@ var app = new Vue({
                 });
                 return true;
             }
-            if (position !== '') {
-                this.$alert(`您要投递的岗位是【${position}】`, '提示', {
+            if (typeof(post) !== undefined) {
+                this.$alert(`您要投递的岗位是【${post.name}】`, '提示', {
                     confirmButtonText: '确定',
                     callback: action => {
+                        if (action == 'cancel') return;
+                        this.positionSelected = post;
+                        this.ruleForm.positionName = this.positionSelected.name;
+                        this.ruleForm.place = this.positionSelected.place;
+                        // 关闭表单弹出框
                         this.dialogFormVisible = true;
                     }
                 });
@@ -64,12 +101,6 @@ var app = new Vue({
         },
         hasCV() {
             return true;
-        },
-        deliver() {
-            this.$message({
-                message: '恭喜你，投递成功！',
-                type: 'success'
-            });
         },
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
