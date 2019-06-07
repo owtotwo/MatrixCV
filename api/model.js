@@ -35,7 +35,7 @@ const form = {
             }
         }
     ],
-    "application": [
+    "delivery": [
         {
             "id": 1,
             "user": "UserA",
@@ -54,7 +54,7 @@ const form = {
 };
 
 // Set some defaults (required if your JSON file is empty)
-db.defaults({ admin: [ {'id':'admin','password':'admin'} ], user: [], cv: [], application: [ ] })
+db.defaults({ admin: [ {'id':'admin','password':'admin'} ], user: [], cv: [], delivery: [ ] })
   .write();
 
 const cvModel = {

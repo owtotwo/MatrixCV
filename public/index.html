@@ -23,7 +23,9 @@
                 </el-menu-item>
                 <el-menu-item index="3" style="float: right;" disabled>关于我们</el-menu-item>
                 <el-menu-item index="2" style="float: right;">招聘岗位</el-menu-item>
-                <el-menu-item index="1" style="float: right;">主页</el-menu-item>
+                <el-menu-item index="1" style="float: right;">
+                    <el-link href="/" target="_blank" :underline="false">主页</el-link>
+                </el-menu-item>
             </el-menu>
         </div>
         <template>
@@ -62,11 +64,9 @@
                                     </el-card>
                                 </div>
                                 <el-row>
-                                    <el-button @click="visible = true" style="float: right; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)">投递简历
+                                    <el-button @click="tryDeliver"
+                                        style="float: right; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)">投递简历
                                     </el-button>
-        <el-dialog :visible.sync="visible" title="Hello">
-            <p>Try {{ message }} Element</p>
-        </el-dialog>
                                 </el-row>
                             </el-card>
                         </el-tab-pane>
@@ -75,7 +75,34 @@
                         <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
                     </el-tabs>
                 </template>
+                <!-- Form -->
+                <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button>
+
+                <el-dialog title="面试安排" :visible.sync="dialogFormVisible">
+                    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="110px">
+                        <el-form-item label="投递人姓名" prop="name">
+                            <el-input v-model="ruleForm.name"></el-input>
+                        </el-form-item>
+                        <el-form-item label="面试岗位" prop="position">
+                            <el-input v-model="ruleForm.position" :readonly="true"></el-input>
+                        </el-form-item>
+                        <el-form-item label="面试地点" prop="place">
+                            <el-input v-model="ruleForm.place" :readonly="true"></el-input>
+                        </el-form-item>
+                        <el-form-item label="近期空闲时间" prop="freeTime">
+                            <el-input v-model="ruleForm.freeTime"></el-input>
+                        </el-form-item>
+                        <el-form-item label="备注" prop="remark">
+                            <el-input type="textarea" v-model="ruleForm.remark"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="dialogFormVisible = false">取 消</el-button>
+                        <el-button type="primary" @click="submitForm('ruleForm')">投 递</el-button>
+                    </div>
+                </el-dialog>
             </el-main>
+            <div class="line"></div>
             <el-footer id="page-footer">
                 <small>&copy; Copyright 2019 by owtotwo</small>
             </el-footer>

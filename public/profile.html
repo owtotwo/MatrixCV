@@ -23,31 +23,56 @@
                 </el-menu-item>
                 <el-menu-item index="3" style="float: right;" disabled>关于我们</el-menu-item>
                 <el-menu-item index="2" style="float: right;">招聘岗位</el-menu-item>
-                <el-menu-item index="1" style="float: right;">主页</el-menu-item>
+                <el-menu-item index="1" style="float: right;">
+                    <el-link href="/" target="_blank" :underline="false">主页</el-link>
+                </el-menu-item>
             </el-menu>
         </div>
         <el-container>
             <el-main id="page-content">
                 <el-row :gutter="20">
                     <el-col :span="16">
-                        <el-card id="my-cv" class="box-card">
+                        <el-card v-if="isCVreadonly == true" id="my-cv" class="box-card">
                             <div slot="header" class="clearfix">
                                 <span>我的简历</span>
                                 <el-button style="float: right; padding: 3px 0" type="text">编辑简历</el-button>
                             </div>
-                            <div v-for="o in 4" :key="o" class="text item">
-                                {{'列表内容 ' + o }}
-                            </div>
+                            <el-form ref="cv" :model="cv" label-width="100px">
+                                <el-form-item label="姓名">
+                                    <el-input v-model="cv.name" :readonly="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="年级">
+                                    <el-input v-model="cv.grade" :readonly="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="院系">
+                                    <el-input v-model="cv.college" :readonly="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="专业">
+                                    <el-input v-model="cv.major" :readonly="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="项目经验">
+                                    <el-input type="textarea" v-model="cv.project_exp" :readonly="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="实习经验">
+                                    <el-input type="textarea" v-model="cv.internship_exp" :readonly="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="校园活动经验">
+                                    <el-input type="textarea" v-model="cv.activity_exp" :readonly="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="自身技能">
+                                    <el-input type="textarea" v-model="cv.skill" :readonly="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="自我评价">
+                                    <el-input type="textarea" v-model="cv.evaluation" :readonly="true"></el-input>
+                                </el-form-item>
+                            </el-form>
                         </el-card>
-                        <el-card id="new-cv" class="box-card">
+                        <el-card v-if="isCVreadonly == false" id="new-cv" class="box-card">
                             <div slot="header" class="clearfix">
                                 <span>新建简历</span>
                             </div>
                             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px"
                                 class="demo-ruleForm">
-                                <!-- <el-form-item label="活动名称" prop="name">
-                                    <el-input v-model="ruleForm.name"></el-input>
-                                </el-form-item> -->
                                 <el-form-item label="姓名" prop="name">
                                     <el-input v-model="ruleForm.name"></el-input>
                                 </el-form-item>
@@ -60,61 +85,55 @@
                                 <el-form-item label="专业" prop="major">
                                     <el-input v-model="ruleForm.major"></el-input>
                                 </el-form-item>
-                                <el-form-item label="活动区域" prop="region">
-                                    <el-select v-model="ruleForm.region" placeholder="请选择活动区域">
-                                        <el-option label="区域一" value="shanghai"></el-option>
-                                        <el-option label="区域二" value="beijing"></el-option>
-                                    </el-select>
+                                <el-form-item label="项目经验" prop="project_exp">
+                                    <el-input type="textarea" v-model="ruleForm.project_exp"></el-input>
                                 </el-form-item>
-                                <el-form-item label="活动时间" required>
-                                    <el-col :span="11">
-                                        <el-form-item prop="date1">
-                                            <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.date1"
-                                                style="width: 100%;"></el-date-picker>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col class="line" :span="2">-</el-col>
-                                    <el-col :span="11">
-                                        <el-form-item prop="date2">
-                                            <el-time-picker placeholder="选择时间" v-model="ruleForm.date2"
-                                                style="width: 100%;"></el-time-picker>
-                                        </el-form-item>
-                                    </el-col>
+                                <el-form-item label="实习经验" prop="internship_exp">
+                                    <el-input type="textarea" v-model="ruleForm.internship_exp"></el-input>
                                 </el-form-item>
-                                <el-form-item label="即时配送" prop="delivery">
-                                    <el-switch v-model="ruleForm.delivery"></el-switch>
+                                <el-form-item label="校园活动经验" prop="activity_exp">
+                                    <el-input type="textarea" v-model="ruleForm.activity_exp"></el-input>
                                 </el-form-item>
-                                <el-form-item label="活动性质" prop="type">
-                                    <el-checkbox-group v-model="ruleForm.type">
-                                        <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-                                        <el-checkbox label="地推活动" name="type"></el-checkbox>
-                                        <el-checkbox label="线下主题活动" name="type"></el-checkbox>
-                                        <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
-                                    </el-checkbox-group>
+                                <el-form-item label="自身技能" prop="skill">
+                                    <el-input type="textarea" v-model="ruleForm.skill"></el-input>
                                 </el-form-item>
-                                <el-form-item label="特殊资源" prop="resource">
-                                    <el-radio-group v-model="ruleForm.resource">
-                                        <el-radio label="线上品牌商赞助"></el-radio>
-                                        <el-radio label="线下场地免费"></el-radio>
-                                    </el-radio-group>
-                                </el-form-item>
-                                <el-form-item label="活动形式" prop="desc">
-                                    <el-input type="textarea" v-model="ruleForm.desc"></el-input>
+                                <el-form-item label="自我评价" prop="evaluation">
+                                    <el-input type="textarea" v-model="ruleForm.evaluation"></el-input>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+                                    <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
                                     <el-button @click="resetForm('ruleForm')">重置</el-button>
                                 </el-form-item>
                             </el-form>
                         </el-card>
                     </el-col>
                     <el-col :span="8">
-                        <el-card id="my-application" class="box-card">
+                        <el-card id="my-deliveries" class="box-card">
                             <div slot="header" class="clearfix">
                                 <span>我的投递</span>
+                                <el-switch v-model="isCVreadonly" active-text="查看简历" inactive-text="编辑简历"></el-switch>
                             </div>
-                            <div v-for="o in 4" :key="o" class="text item">
-                                {{'列表内容 ' + o }}
+                            <div v-for="delivery in deliveries" class="delivery-card">
+                                <el-form label-width="40px">
+                                    <el-card class="box-card" shadow="hover">
+                                        <el-form-item label="岗位">
+                                            <el-input v-model="delivery.position" :readonly="true"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="环节">
+                                            <el-input v-model="delivery.state" :readonly="true"></el-input>
+                                        </el-form-item>
+                                        <div v-if="delivery.state == '面试中'">
+                                            <el-form-item label="时间">
+                                                <el-input v-model="delivery.interviewInfo.time" :readonly="true">
+                                                </el-input>
+                                            </el-form-item>
+                                            <el-form-item label="地点">
+                                                <el-input v-model="delivery.interviewInfo.place" :readonly="true">
+                                                </el-input>
+                                            </el-form-item>
+                                        </div>
+                                    </el-card>
+                                </el-form>
                             </div>
                         </el-card>
                     </el-col>
@@ -125,6 +144,7 @@
                     </el-button>
                 </p>
             </el-main>
+            <div class="line"></div>
             <el-footer id="page-footer">
                 <small>&copy; Copyright 2019 by owtotwo</small>
             </el-footer>

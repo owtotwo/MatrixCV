@@ -12,8 +12,8 @@ body {
     background-color: #d3dce6;
 }
 
-#page-footer {
-    text-align: center;
+.el-main {
+    padding: 0;
 }
 
 #job-detial .text {
@@ -32,4 +32,14 @@ body {
 
 #job-detial .clearfix:after {
     clear: both
+}
+
+.line {
+    height: 1px;
+    background-color: #e0e6ed;
+    margin: 25px 0;
+}
+
+#page-footer {
+    text-align: center;
 }
