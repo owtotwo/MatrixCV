@@ -32,10 +32,10 @@
             <el-main id="page-content">
                 <el-row :gutter="20">
                     <el-col :span="16">
-                        <el-card v-if="isCVreadonly == true" id="my-cv" class="box-card">
+                        <el-card v-if="isCVreadonly && hasCV" id="my-cv" class="box-card">
                             <div slot="header" class="clearfix">
                                 <span>我的简历</span>
-                                <el-button style="float: right; padding: 3px 0" type="text">编辑简历</el-button>
+                                <el-button @click="isCVreadonly = false" style="float: right; padding: 3px 0" type="text">编辑简历</el-button>
                             </div>
                             <el-form ref="cv" :model="cv" label-width="100px">
                                 <el-form-item label="姓名">
@@ -69,40 +69,41 @@
                         </el-card>
                         <el-card v-if="isCVreadonly == false" id="new-cv" class="box-card">
                             <div slot="header" class="clearfix">
-                                <span>新建简历</span>
+                                <span v-if="hasCV">编辑简历</span>
+                                <span v-else>新建简历</span>
                             </div>
-                            <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px"
-                                class="demo-ruleForm">
+                            <el-form :model="ruleCvForm" :rules="rules" ref="ruleCvForm" label-width="100px"
+                                class="demo-ruleCvForm">
                                 <el-form-item label="姓名" prop="name">
-                                    <el-input v-model="ruleForm.name"></el-input>
+                                    <el-input v-model="ruleCvForm.name"></el-input>
                                 </el-form-item>
                                 <el-form-item label="年级" prop="grade">
-                                    <el-input v-model="ruleForm.grade"></el-input>
+                                    <el-input v-model="ruleCvForm.grade"></el-input>
                                 </el-form-item>
                                 <el-form-item label="院系" prop="college">
-                                    <el-input v-model="ruleForm.college"></el-input>
+                                    <el-input v-model="ruleCvForm.college"></el-input>
                                 </el-form-item>
                                 <el-form-item label="专业" prop="major">
-                                    <el-input v-model="ruleForm.major"></el-input>
+                                    <el-input v-model="ruleCvForm.major"></el-input>
                                 </el-form-item>
                                 <el-form-item label="项目经验" prop="project_exp">
-                                    <el-input type="textarea" v-model="ruleForm.project_exp"></el-input>
+                                    <el-input type="textarea" v-model="ruleCvForm.project_exp"></el-input>
                                 </el-form-item>
                                 <el-form-item label="实习经验" prop="internship_exp">
-                                    <el-input type="textarea" v-model="ruleForm.internship_exp"></el-input>
+                                    <el-input type="textarea" v-model="ruleCvForm.internship_exp"></el-input>
                                 </el-form-item>
                                 <el-form-item label="校园活动经验" prop="activity_exp">
-                                    <el-input type="textarea" v-model="ruleForm.activity_exp"></el-input>
+                                    <el-input type="textarea" v-model="ruleCvForm.activity_exp"></el-input>
                                 </el-form-item>
                                 <el-form-item label="自身技能" prop="skill">
-                                    <el-input type="textarea" v-model="ruleForm.skill"></el-input>
+                                    <el-input type="textarea" v-model="ruleCvForm.skill"></el-input>
                                 </el-form-item>
                                 <el-form-item label="自我评价" prop="evaluation">
-                                    <el-input type="textarea" v-model="ruleForm.evaluation"></el-input>
+                                    <el-input type="textarea" v-model="ruleCvForm.evaluation"></el-input>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
-                                    <el-button @click="resetForm('ruleForm')">重置</el-button>
+                                    <el-button type="primary" @click="submitCvForm('ruleCvForm')">保存</el-button>
+                                    <el-button v-if="hasCV" @click="loadMyCv(() => (isCVreadonly = true))">取消</el-button>
                                 </el-form-item>
                             </el-form>
                         </el-card>
@@ -111,7 +112,7 @@
                         <el-card id="my-deliveries" class="box-card">
                             <div slot="header" class="clearfix">
                                 <span>我的投递</span>
-                                <el-switch v-model="isCVreadonly" active-text="查看简历" inactive-text="编辑简历"></el-switch>
+                                <!-- <el-switch v-model="isCVreadonly" active-text="查看简历" inactive-text="编辑简历"></el-switch> -->
                             </div>
                             <div v-for="delivery in deliveries" class="delivery-card">
                                 <el-form label-width="40px">
@@ -139,8 +140,8 @@
                     </el-col>
                 </el-row>
                 <p style="text-align: center;">
-                    <el-button @click="">
-                        投递简历
+                    <el-button @click="logout" type="danger" plain>
+                        登 出
                     </el-button>
                 </p>
             </el-main>

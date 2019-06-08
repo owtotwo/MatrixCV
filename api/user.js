@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 var model = require('./model');
 var userModel = model.user;
-var model = require('./model');
 var deliveryModel = model.delivery;
+var cvModel = model.cv;
 var config = require('../config');
 const jwt = require('jsonwebtoken');
 var expressJwt = require('express-jwt');
@@ -50,24 +50,105 @@ router.get('/islogined',
             username: req.user.username, isAdmin: req.user.isAdmin
         });
     },
-    function(err, req, res, next) {
+    function (err, req, res, next) {
         console.log('判读登录时未发现有效token');
         res.json({ state: 'success', isLogined: false });
     });
 
-// 查询是否已登录，并获取用户名与查看是否为管理员
+// 查询是否已有简历
 router.get('/hascv',
     expressJwt({ secret: secretKey }),
     function (req, res, next) {
-        if (userModel.hasCvByUser(req.user.username)) {
-            res.json({
-                state: 'success', hasCV: true
-            });
-        } else {
-            res.json({
-                state: 'fail', hasCV: false
-            });
+        res.json({
+            state: 'success', hasCV: cvModel.hasCvByUser(req.user.username)
+        });
+    });
+
+// 获取我的简历
+router.get('/cv',
+    expressJwt({ secret: secretKey }),
+    function (req, res, next) {
+        var cv = cvModel.getCvFromUser(req.user.username);
+        if (!cv) {
+            return res.json({ state: 'fail', errMsg: '无法获得' })
         }
+        res.json({
+            state: 'success',
+            // 附件信息不传，不允许用户查看或下载，只允许更新
+            cv: {
+                "姓名": cv.content["姓名"],
+                "年级": cv.content["年级"],
+                "院系": cv.content["院系"],
+                "专业": cv.content["专业"],
+                "项目经历": cv.content["项目经历"],
+                "实习经历": cv.content["实习经历"],
+                "校园活动经验": cv.content["校园活动经验"],
+                "自身技能": cv.content["自身技能"],
+                "自我评价": cv.content["自我评价"]
+            }
+        });
+    });
+
+// 获取我的投递列表
+router.get('/delivery',
+    expressJwt({ secret: secretKey }),
+    function (req, res, next) {
+        var deliveryList = deliveryModel.getDeliveryListFromUser(req.user.username);
+        if (!deliveryList) {
+            return res.json({ state: 'fail', errMsg: '从数据库中获取用户的投递列表失败' })
+        }
+        res.json({
+            state: 'success',
+            deliveryList: deliveryList
+        });
+    });
+
+// 更新用户简历
+router.post('/cv/update',
+    expressJwt({ secret: secretKey }),
+    function (req, res, next) {
+        var cvContent = req.body;
+        cvContent["附件简历"] = ""; // 附件还没写
+        var hasCV = cvModel.hasCvByUser(req.user.username);
+        if (!hasCV) {
+            return res.json({ state: 'fail', errMsg: '此用户还没有简历，无法更新' });
+        }
+        cvModel.updateCvFromUser(req.user.username, {
+            "姓名": cvContent.name,
+            "年级": cvContent.grade,
+            "院系": cvContent.college,
+            "专业": cvContent.major,
+            "项目经历": cvContent.project_exp,
+            "实习经历": cvContent.internship_exp,
+            "校园活动经验": cvContent.activity_exp,
+            "自身技能": cvContent.skill,
+            "自我评价": cvContent.evaluation
+        });
+        res.json({ state: 'success' });
+    });
+
+// 新建用户简历
+router.post('/cv/create',
+    expressJwt({ secret: secretKey }),
+    function (req, res, next) {
+        var cvContent = req.body;
+        cvContent["附件简历"] = ""; // 附件还没写
+        var hasCV = cvModel.hasCvByUser(req.user.username);
+        if (hasCV) {
+            return res.json({ state: 'fail', errMsg: '用户已有简历，最多一个简历，无法再创建' });
+        }
+        cvModel.createCv(req.user.username, {
+            "姓名": cvContent.name,
+            "年级": cvContent.grade,
+            "院系": cvContent.college,
+            "专业": cvContent.major,
+            "项目经历": cvContent.project_exp,
+            "实习经历": cvContent.internship_exp,
+            "校园活动经验": cvContent.activity_exp,
+            "自身技能": cvContent.skill,
+            "自我评价": cvContent.evaluation
+        }, cvContent["附件简历"]);
+        res.json({ state: 'success' });
     });
 
 // 用户投递
@@ -75,7 +156,7 @@ router.post('/deliver',
     expressJwt({ secret: secretKey }),
     function (req, res, next) {
         var username = req.user.username;
-        if (!userModel.hasCvByUser(username)) {
+        if (!cvModel.hasCvByUser(username)) {
             return res.json({ state: 'fail', errMsg: '此用户没有简历，无法投递' });
         }
         var newDeliveryId = deliveryModel.deliver(username, {

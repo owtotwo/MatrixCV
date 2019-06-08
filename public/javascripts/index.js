@@ -150,7 +150,7 @@ var app = new Vue({
                 .then(response => {
                     var data = response.data;
                     if (data.state == 'success') {
-                        callback(data.isLogined);
+                        callback && callback(data.isLogined);
                     } else if (data.state == 'fail') {
                         this.$message.error('请求判断是否已登录失败，原因未知');
                     }
@@ -164,9 +164,9 @@ var app = new Vue({
                 .then(response => {
                     var data = response.data;
                     if (data.state == 'success') {
-                        callback(data.hasCV);
+                        callback && callback(data.hasCV);
                     } else if (data.state == 'fail') {
-                        this.$message.error('请求判断是否已有简历，原因未知');
+                        this.$message.error('请求判断是否已有简历错误，原因未知');
                     }
                 })
                 .catch(error => this.$message.error(error))

@@ -74,8 +74,7 @@ db.defaults({
     delivery: [],
     attachment: [],
     position: []
-})
-.write();
+}).write();
 
 const cvModel = {
     getCvFromId: function (cvid) {
@@ -83,18 +82,43 @@ const cvModel = {
             .find({ id: cvid })
             .value();
     },
-    setCvFromId: function (cvid, cvContent) {
+    getCvFromUser: function (username) {
+        var cvid = db.get('user')
+            .find({ username: username })
+            .value()
+            .cv;
+        return db.get('cv')
+            .find({ id: cvid })
+            .value();
+    },
+    updateCvFromId: function (cvid, cvContent) {
         db.get('cv')
             .find({ id: cvid })
             .assign({ content: cvContent })
             .write();
     },
-    createCv: function (username, content, attachmentFilePath) {
+    updateCvFromUser: function (username, cvContent) {
         console.log('username: ', username);
-        console.log('createCv: ', content);
+        console.log('createCv: ', cvContent);
+        var cvid = db.get('user')
+            .find({ username: username })
+            .value()
+            .cv;
+        db.get('cv')
+            .find({ id: cvid })
+            .assign({ content: cvContent })
+            .write();
+    },
+    createCv: function (username, cvContent, attachmentFilePath) {
+        console.log('username: ', username);
+        console.log('createCv: ', cvContent);
         var newCvId = shortid.generate();
         db.get('cv')
-            .push({ id: newCvId, user: username, content: content })
+            .push({ id: newCvId, user: username, content: cvContent })
+            .write();
+        db.get('user')
+            .find({ username: username })
+            .assign({ cv: newCvId })
             .write();
         return newCvId;
     },
@@ -107,6 +131,12 @@ const cvModel = {
         db.get('cv')
             .remove({ user: username })
             .write();
+    },
+    hasCvByUser: function (username) {
+        return Boolean(db.get('user')
+            .find({ username: username })
+            .value()
+            .cv);
     }
 };
 
@@ -127,12 +157,6 @@ const userModel = {
         return Boolean(db.get('user')
             .find({ username: username })
             .value());
-    },
-    hasCvByUser: function (username) {
-        return Boolean(db.get('user')
-            .find({ username: username })
-            .value()
-            .cv);
     }
 };
 
@@ -168,8 +192,16 @@ const deliveryModel = {
                 "备注": content.remark
             })
             .write();
-        
+
         return newDeliveryId;
+    },
+    getDeliveryListFromUser: function (username) {
+        console.log('获取用户'+username+'的投递列表');
+        var deliveryList = db.get('delivery')
+        .filter({ user: username })
+        .value();
+        console.log(deliveryList);
+        return deliveryList;
     }
 }
 // // Add a user
