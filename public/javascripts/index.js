@@ -2,7 +2,9 @@ var app = new Vue({
     el: '#app',
     data: {
         // 投递表单弹出框的弹出trigger
-        dialogFormVisible: false,
+        deliveryDialogFormVisible: false,
+        // 登录表单弹出框的弹出trigger
+        loginDialogFormVisible: false,
         // 选择投递的岗位的引用
         positionSelected: {},
         // 从服务器获取的岗位列表
@@ -21,15 +23,15 @@ var app = new Vue({
             }
         ],
         // 带验证的投递表单值
-        ruleForm: {
+        ruleDeliveryForm: {
             name: '',
             positionName: '',
             place: '',
             freeTime: '',
             remark: ''
         },
-        // 验证规则
-        rules: {
+        // 投递表单验证规则
+        deliveryFormRules: {
             name: [
                 { required: true, message: '请输入投递人姓名', trigger: 'blur' },
                 { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
@@ -41,6 +43,22 @@ var app = new Vue({
             internship_exp: [
                 { required: false, message: '请填写备注', trigger: 'blur' },
                 { max: 140, message: '长度小于 140 个字符', trigger: 'blur' }
+            ]
+        },
+        // 带验证的登录表单
+        ruleLoginForm: {
+            username: '',
+            password: ''
+        },
+        // 登录表单验证规则
+        loginFormRules: {
+            username: [
+                { required: true, message: '请输入用户名', trigger: 'blur' },
+                { max: 24, message: '长度在不大于 24 个字符', trigger: 'blur' }
+            ],
+            password: [
+                { required: true, message: '请输入密码', trigger: 'blur' },
+                { max: 24, message: '长度在不大于 24 个字符', trigger: 'blur' }
             ]
         }
     },
@@ -101,7 +119,7 @@ var app = new Vue({
                     this.ruleForm.positionName = this.positionSelected.name;
                     this.ruleForm.place = this.positionSelected.place;
                     // 关闭表单弹出框
-                    this.dialogFormVisible = true;
+                    this.deliveryDialogFormVisible = true;
                 }
             });
             return true;
@@ -114,14 +132,14 @@ var app = new Vue({
         hasCV() {
             return true;
         },
-        submitForm(formName) {
+        submitDeliveryForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     this.$message({
                         message: '恭喜你，投递成功！',
                         type: 'success'
                     });
-                    dialogFormVisible = false;
+                    this.deliveryDialogFormVisible = false;
                     window.location.href = '/profile';
                 } else {
                     this.$message.error('哦噢，好像投递失败了~');
@@ -129,5 +147,82 @@ var app = new Vue({
                 }
             });
         },
+        submitLoginForm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    console.log(this);
+                    axios
+                        .post('/api/user/login', {
+                            username: this.ruleLoginForm.username,
+                            // 单纯防止明文密码在网路上传输，也防止明文密码存在于服务器
+                            // 实际加密处理在服务器执行
+                            password: CryptoJS.MD5(this.ruleLoginForm.password).toString()
+                        })
+                        .then((response) => {
+                            console.log('登录ajax返回了');
+                            console.log(response);
+                            var data = response.data;
+                            if (data.state == 'success') {
+                                this.$message({
+                                    message: '恭喜你，登录成功！',
+                                    type: 'success'
+                                });
+                                token = data.token
+                                this.loginDialogFormVisible = false;
+                                // window.location.href = '/profile';
+                            } else if (data.state == 'fail') {
+                                this.$message({
+                                    message: data.errMsg,
+                                    type: 'warning'
+                                });
+                            } else {
+                                this.$message.error('未知错误');
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            this.$message.error(error);
+                        })
+                        .finally(() => this.loading = false);
+                } else {
+                    this.$message.error('哦噢，好像登录失败了~');
+                    return false;
+                }
+            });
+        }
     }
 });
+
+// axios拦截器
+// 拦截请求，给所有的请求都带上token
+axios.interceptors.request.use(request => {
+    const matrixcv_jwt_token = window.localStorage.getItem('matrixcv_jwt_token');
+    if (matrixcv_jwt_token) {
+        // 此处有坑，在此记录request.headers['Authorization']
+        // 必须通过此种形式设置Authorization，否则后端即使收到字段也会出现问题，返回401,
+        // request.headers.Authorization或request.headers.authorization可以设置成功，
+        // 浏览器查看也没有任何问题，但是在后端会报401并且后端一律只能拿到小写的，
+        // 也就是res.headers.authorization，后端用大写获取会报undefined.
+        request.headers['Authorization'] = `Bearer ${matrixcv_jwt_token}`;
+    }
+    return request;
+});
+
+// 拦截响应，遇到token不合法则报错
+axios.interceptors.response.use(
+    response => {
+        if (response.data.token) {
+            console.log('token:', response.data.token);
+            window.localStorage.setItem('matrixcv_jwt_token', response.data.token);
+        }
+        return response;
+    },
+    error => {
+        const errRes = error.response;
+        if (errRes.status === 401) {
+            window.localStorage.removeItem('matrixcv_jwt_token');
+            this.$message.error('Jwt验证错误');
+        }
+        // 返回接口返回的错误信息
+        return Promise.reject(error.message);
+    });

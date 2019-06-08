@@ -5,7 +5,17 @@
       "password": "admin"
     }
   ],
-  "user": [],
+  "user": [
+    {
+      "username": "abc",
+      "password": "e10adc3949ba59abbe56e057f20f883e",
+      "cv": [
+        {
+          "cvid": 1
+        }
+      ]
+    }
+  ],
   "cv": [
     {
       "id": "Xv_I6Vo3v",

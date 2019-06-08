@@ -8,13 +8,13 @@ const shortid = require('shortid')
 const form = {
     "admin": [
         { "id": "Admin", "password": "admin" },
-        { "id": "AnotherAdmin", "password": "adminPasswd"}
+        { "id": "AnotherAdmin", "password": "adminPasswd" }
     ],
     "user": [
-        { 
+        {
             "username": "UserA", // 唯一
-            "password": "plaintext",
-            "cv": [ { "cvid": 1 } ], // 暂时一个用户只有一个简历
+            "password": "ciphertext", // MD5加密的密文
+            "cv": [{ "cvid": 1 }], // 暂时一个用户只有一个简历
         },
     ],
     "cv": [
@@ -63,28 +63,28 @@ const form = {
 
 // Set some defaults (required if your JSON file is empty)
 db.defaults({
-        admin: [ {'id':'admin','password':'admin'} ],
-        user: [],
-        cv: [],
-        delivery: [],
-        attachment: [],
-        position: []
-    })
+    admin: [{ 'id': 'admin', 'password': 'admin' }],
+    user: [],
+    cv: [],
+    delivery: [],
+    attachment: [],
+    position: []
+})
     .write();
 
 const cvModel = {
-    getCvFromId: function(cvid) {
+    getCvFromId: function (cvid) {
         return db.get('cv')
             .find({ id: cvid })
             .value();
     },
-    setCvFromId: function(cvid, cvContent) {
+    setCvFromId: function (cvid, cvContent) {
         db.get('cv')
             .find({ id: cvid })
             .assign({ content: cvContent })
             .write();
     },
-    createCv: function(content, attachmentFilePath) {
+    createCv: function (content, attachmentFilePath) {
         console.log('createCv: ', content);
         var newCvId = shortid.generate();
         const result = db.get('cv')
@@ -92,19 +92,32 @@ const cvModel = {
             .write();
         return newCvId;
     },
-    deleteCvFromId: function(cvid) {
+    deleteCvFromId: function (cvid) {
         db.get('cv')
             .remove({ id: cvid })
             .write();
     }
-}
+};
 
 const positionModel = {
-    getPositionList: function() {
+    getPositionList: function () {
         return db.get('position')
             .value();
     }
-}
+};
+
+const userModel = {
+    isMatched: function (username, password) {
+        return Boolean(db.get('user')
+            .find({ username: username, password: password })
+            .value());
+    },
+    isUserExisted: function (username) {
+        return Boolean(db.get('user')
+            .find({ username: username })
+            .value());
+    }
+};
 // // Add a user
 // db.get('users')
 //   .push({ id: 1, title: 'lowdb is awesome'})
@@ -113,12 +126,13 @@ const positionModel = {
 // // Set a user using Lodash shorthand syntax
 // db.set('user.name', 'typicode')
 //   .write()
-  
+
 // // Increment count
 // db.update('count', n => n + 1)
 //   .write()
 
 module.exports = {
     cv: cvModel,
-    position: positionModel
+    position: positionModel,
+    user: userModel
 };

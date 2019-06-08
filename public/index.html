@@ -19,7 +19,7 @@
                     </el-image>
                 </el-menu-item>
                 <el-menu-item index="4" style="float: right;">
-                    <el-link href="/login" :underline="false">登录</el-link>
+                    <el-link @click="loginDialogFormVisible = true" :underline="false">登录</el-link>
                 </el-menu-item>
                 <el-menu-item index="3" style="float: right;" disabled>关于我们</el-menu-item>
                 <el-menu-item index="2" style="float: right;">招聘岗位</el-menu-item>
@@ -72,30 +72,49 @@
                     </el-tabs>
                 </template>
                 <!-- Form -->
-                <!-- <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
+                <!-- <el-button type="text" @click="deliveryDialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
 
-                <el-dialog title="面试安排" :visible.sync="dialogFormVisible">
-                    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="110px">
+                <!-- 投递表单弹出框 -->
+                <el-dialog title="面试安排" :visible.sync="deliveryDialogFormVisible">
+                    <el-form :model="ruleDeliveryForm" :rules="deliveryFormRules" ref="ruleDeliveryForm"
+                        label-width="110px">
                         <el-form-item label="投递人姓名" prop="name">
-                            <el-input v-model="ruleForm.name"></el-input>
+                            <el-input v-model="ruleDeliveryForm.name"></el-input>
                         </el-form-item>
                         <el-form-item label="面试岗位" prop="positionName">
-                            <el-input v-model="ruleForm.positionName" :readonly="true"></el-input>
+                            <el-input v-model="ruleDeliveryForm.positionName" :readonly="true"></el-input>
                         </el-form-item>
                         <el-form-item label="面试地点" prop="place">
-                            <el-input v-model="ruleForm.place" :readonly="true"></el-input>
+                            <el-input v-model="ruleDeliveryForm.place" :readonly="true"></el-input>
                         </el-form-item>
                         <el-form-item label="近期空闲时间" prop="freeTime">
-                            <el-input v-model="ruleForm.freeTime"></el-input>
+                            <el-input v-model="ruleDeliveryForm.freeTime"></el-input>
                         </el-form-item>
                         <el-form-item label="备注" prop="remark">
-                            <el-input type="textarea" v-model="ruleForm.remark"></el-input>
+                            <el-input type="textarea" v-model="ruleDeliveryForm.remark"></el-input>
                         </el-form-item>
                     </el-form>
                     <div slot="footer" class="dialog-footer">
                         <span style="margin: 0 30px">* 一经提交不能再修改</span>
-                        <el-button @click="dialogFormVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="submitForm('ruleForm')">投 递</el-button>
+                        <el-button @click="deliveryDialogFormVisible = false">取 消</el-button>
+                        <el-button type="primary" @click="submitDeliveryForm('ruleDeliveryForm')">投 递</el-button>
+                    </div>
+                </el-dialog>
+
+                <el-button type="text" @click="loginDialogFormVisible = true">打开嵌套表单的 Dialog</el-button>
+                <!-- 登录表单弹出框 -->
+                <el-dialog title="登录" :visible.sync="loginDialogFormVisible">
+                    <el-form :model="ruleLoginForm" :rules="loginFormRules" ref="ruleLoginForm" label-width="110px">
+                        <el-form-item label="用户名" prop="username">
+                            <el-input v-model="ruleLoginForm.username"></el-input>
+                        </el-form-item>
+                        <el-form-item label="密码" prop="password">
+                            <el-input type="password" v-model="ruleLoginForm.password"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="loginDialogFormVisible = false">取 消</el-button>
+                        <el-button type="primary" @click="submitLoginForm('ruleLoginForm')">投 递</el-button>
                     </div>
                 </el-dialog>
             </el-main>
@@ -119,6 +138,9 @@
 
 <!-- 引入axios库，版本为0.19.0 -->
 <script src="https://cdn.bootcss.com/axios/0.19.0/axios.js"></script>
+
+<!-- 引入crypto-js库（使用其中的MD5模块） -->
+<script src="https://cdn.bootcss.com/crypto-js/3.1.9-1/crypto-js.min.js"></script>
 
 <!-- 本页面的包含Vue内容的Js，放在Vue后面 -->
 <script src="javascripts/index.js"></script>
