@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MatrixCV - Admin</title>
+    <link rel="shortcut icon" type="image/png" href="images/favicon.png" />
+    <!-- 引入Element-UI样式，锁定版本 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.9.1/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="stylesheets/admin.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-row class="tac">
+
+        </el-row>
+        <el-container>
+            <el-main id="page-content">
+                <el-row :gutter="20">
+                    <el-col :span="6">
+                        <img id="avatar" src="images/admin_avatar.png" alt="Avatar">
+                        <el-menu default-active="1">
+                            <el-menu-item index="1">
+                                <i class="el-icon-notebook-2"></i>
+                                <span slot="title">简历概览</span>
+                            </el-menu-item>
+                            <el-menu-item index="2" disabled>
+                                <i class="el-icon-news"></i>
+                                <span slot="title">岗位描述</span>
+                            </el-menu-item>
+                        </el-menu>
+                    </el-col>
+                    <el-card>
+                        <!-- <el-row>
+                            <el-card class="filter-card" shadow="never">
+                                <el-row>
+                                    <template>
+                                        <span>投递岗位</span>
+                                        <el-select v-model="filterFrom.positionName" placeholder="请选择">
+                                            <el-option label="产品经理" value="产品经理"></el-option>
+                                            <el-option label="前端" value="前端"></el-option>
+                                        </el-select>
+                                    </template>
+                                    <template>
+                                        <span>环节状态</span>
+                                        <el-select v-model="filterFrom.state" placeholder="请选择">
+                                            <el-option label="待处理" value="待处理"></el-option>
+                                            <el-option label="面试中" value="面试中"></el-option>
+                                            <el-option label="已结束" value="已结束"></el-option>
+                                        </el-select>
+                                    </template>
+                                </el-row>
+                                <el-row id="filter-button-row">
+                                    <el-button @click="" type="primary" round>筛 选</el-button>
+                                </el-row>
+                            </el-card>
+                        </el-row> -->
+                        <el-row>
+                            <template>
+                                <el-tabs v-model="activeName" @tab-click="handleTabClick">
+                                    <el-tab-pane label="未完成" name="未完成">
+                                        <template>
+                                            <el-table height="700" ref="filterUnfinishedTable"
+                                                :data="unfinishedTableData" style="width: 100%">
+                                                <el-table-column type="expand">
+                                                    <template slot-scope="detials">
+                                                        <el-form label-position="left" label-width="100px"
+                                                            class="demo-table-expand">
+                                                            <el-form-item label="姓名">
+                                                                <span>{{ detials.row.name }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="年级">
+                                                                <span>{{ detials.row.grade }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="院系">
+                                                                <span>{{ detials.row.college }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="专业">
+                                                                <span>{{ detials.row.major }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="项目经验">
+                                                                <span>{{ detials.row.project_exp }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="实习经验">
+                                                                <span>{{ detials.row.internship_exp }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="校园活动经验">
+                                                                <span>{{ detials.row.activity_exp }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="自身技能">
+                                                                <span>{{ detials.row.skill }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="自我评价">
+                                                                <span>{{ detials.row.evaluation }}</span>
+                                                            </el-form-item>
+                                                        </el-form>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column prop="id" label="ID" width="100">
+                                                </el-table-column>
+                                                <el-table-column prop="name" label="投递人姓名" width="120">
+                                                </el-table-column>
+                                                <el-table-column prop="position" label="投递岗位" sortable width="120"
+                                                    column-key="position"
+                                                    :filters="[{text: '前端', value: '前端'}, {text: '服务端', value: '服务端'}, {text: '后台', value: '后台'}, {text: '产品经理', value: '产品经理'}, {text: '设计师', value: '设计师'}, {text: '运营', value: '运营'}]"
+                                                    :filter-method="filterHandler">
+                                                </el-table-column>
+                                                <el-table-column prop="time" label="投递时间" width="180">
+                                                </el-table-column>
+                                                <el-table-column prop="state" label="环节状态" sortable
+                                                    :filters="[{ text: '待处理', value: '待处理' }, { text: '面试中', value: '面试中' }]"
+                                                    :filter-method="filterState" filter-placement="bottom-end">
+                                                    <template slot-scope="scope">
+                                                        <el-button
+                                                            :type="scope.row.state === '待处理' ? 'primary' : 'success'"
+                                                            :plain="scope.row.state === '面试中'"
+                                                            :disabled="scope.row.state === '面试中'"
+                                                            @click="scope.row.state === '待处理' ? window.alert('待处理') : window.alert('面试中')"
+                                                            size="mini">
+                                                            {{scope.row.state}}
+                                                        </el-button>
+                                                        <!-- disable-transitions -->
+                                                    </template>
+                                                </el-table-column>
+                                            </el-table>
+                                        </template>
+                                    </el-tab-pane>
+                                    <el-tab-pane label="已完成" name="已完成">
+                                        <template>
+                                            <el-table height="700" ref="filterFinishedTable" :data="finishedTableData"
+                                                style="width: 100%">
+                                                <el-table-column type="expand">
+                                                    <template slot-scope="detials">
+                                                        <el-form label-position="left" label-width="100px"
+                                                            class="demo-table-expand">
+                                                            <el-form-item label="姓名">
+                                                                <span>{{ detials.row.name }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="年级">
+                                                                <span>{{ detials.row.grade }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="院系">
+                                                                <span>{{ detials.row.college }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="专业">
+                                                                <span>{{ detials.row.major }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="项目经验">
+                                                                <span>{{ detials.row.project_exp }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="实习经验">
+                                                                <span>{{ detials.row.internship_exp }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="校园活动经验">
+                                                                <span>{{ detials.row.activity_exp }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="自身技能">
+                                                                <span>{{ detials.row.skill }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="自我评价">
+                                                                <span>{{ detials.row.evaluation }}</span>
+                                                            </el-form-item>
+                                                        </el-form>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column prop="id" label="ID" width="100">
+                                                </el-table-column>
+                                                <el-table-column prop="name" label="投递人姓名" width="120">
+                                                </el-table-column>
+                                                <el-table-column prop="position" label="投递岗位" sortable width="120"
+                                                    column-key="position"
+                                                    :filters="[{text: '前端', value: '前端'}, {text: '服务端', value: '服务端'}, {text: '后台', value: '后台'}, {text: '产品经理', value: '产品经理'}, {text: '设计师', value: '设计师'}, {text: '运营', value: '运营'}]"
+                                                    :filter-method="filterHandler">
+                                                </el-table-column>
+                                                <el-table-column prop="time" label="投递时间" width="180">
+                                                </el-table-column>
+                                                <el-table-column prop="state" label="环节状态" sortable
+                                                    :filters="[{ text: '已结束', value: '已结束' }, { text: '已通过', value: '已通过' }]"
+                                                    :filter-method="filterState" filter-placement="bottom-end">
+                                                    <template slot-scope="scope">
+                                                        <el-button
+                                                            :type="scope.row.state === '已结束' ? 'info' : 'warning'"
+                                                            @click="scope.row.state === '已结束' ? undefined : undefined"
+                                                            size="mini" disabled plain>
+                                                            {{scope.row.state}}
+                                                        </el-button>
+                                                    </template>
+                                                </el-table-column>
+                                            </el-table>
+                                        </template>
+                                    </el-tab-pane>
+                                </el-tabs>
+                            </template>
+                        </el-row>
+                        <!-- <el-row>
+                            <div id="pagination">
+                                <el-pagination layout="prev, pager, next" page-size="10" :total="500">
+                                </el-pagination>
+                            </div>
+                        </el-row> -->
+                    </el-card>
+                </el-row>
+            </el-main>
+            <div class="line"></div>
+            <el-footer id="page-footer">
+                <small>&copy; Copyright 2019 by owtotwo</small>
+            </el-footer>
+        </el-container>
+    </div>
+</body>
+
+<!-- 引入本地Vue开发环境版本，包含了有帮助的命令行警告 -->
+<script src="javascripts/vue.js"></script>
+<!-- Vue开发环境版本，包含了有帮助的命令行警告 -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+<!-- Vue生产环境版本，优化了尺寸和速度 -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+
+<!-- 引入Element-UI组件库，锁定版本 -->
+<script src="https://unpkg.com/element-ui@2.9.1/lib/index.js"></script>
+
+<!-- 引入axios库，版本为0.19.0 -->
+<script src="https://cdn.bootcss.com/axios/0.19.0/axios.js"></script>
+
+<!-- 处理Json Web Token -->
+<script src="javascripts/tokenHandler.js"></script>
+
+<!-- 本页面的包含Vue内容的Js，放在Vue后面 -->
+<script src="javascripts/admin.js"></script>
+
+</html>
