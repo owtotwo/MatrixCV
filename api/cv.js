@@ -21,7 +21,7 @@ router.get('/', function (req, res, next) {
 router.post('/new', function (req, res, next) {
     console.log('req.body = ', req.body);
     if (!req.body.cv) return res.json({ state: 'fail', errMsg: 'No param cv' });
-    var newCvId = cvModel.createCv({
+    var newCvId = cvModel.createCv(req.user.username, {
         "姓名": "李老八",
         "年级": "大一",
         "院系": "数据科学与计算机学院",

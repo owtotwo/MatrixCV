@@ -5,6 +5,8 @@ var app = new Vue({
         deliveryDialogFormVisible: false,
         // 登录表单弹出框的弹出trigger
         loginDialogFormVisible: false,
+        // 是“登录”还是“个人中心”的trigger，非即时同步，需要维护
+        onLogined: false,
         // 选择投递的岗位的引用
         positionSelected: {},
         // 从服务器获取的岗位列表
@@ -63,6 +65,7 @@ var app = new Vue({
         }
     },
     mounted() {
+        // 加载岗位列表（从服务器获取）
         axios
             .get('/api/position')
             .then(response => {
@@ -73,8 +76,20 @@ var app = new Vue({
                     this.positionList = data.positionList;
                 } else if (data.state == 'fail') {
                     this.$message.error('从服务器获取岗位列表失败');
-                } else {
-                    return;
+                }
+            })
+            .catch(error => this.$message.error(error))
+            .finally(() => this.loading = false);
+        // 检查登录状态并更新onLogined
+        axios
+            .get('/api/user/isLogined')
+            .then(response => {
+                var data = response.data;
+                console.log(data);
+                if (data.state == 'success') {
+                    this.onLogined = data.isLogined;
+                } else if (data.state == 'fail') {
+                    this.$message.error('从服务器获取登陆状态失败');
                 }
             })
             .catch(error => this.$message.error(error))
@@ -83,70 +98,122 @@ var app = new Vue({
     methods: {
         // 点击投递按钮后调用，需要在登录的情况下，已有简历，才能弹出 投递表单弹出框
         deliver(post) {
+            // 懒得用Promise了，回调地狱走起
             // 若未登录
-            if (!this.isLogined()) {
-                this.$alert('请先登录后操作', '未登录', {
-                    confirmButtonText: '登录',
-                    callback: action => {
-                        window.location.href = '/login';
-                    }
-                });
-                return true;
-            }
-            // 若未有简历
-            if (!this.hasCV()) {
-                this.$alert('请先进入个人中心创建简历', '未创建简历', {
-                    confirmButtonText: '转至个人中心',
-                    callback: action => {
-                        window.location.href = '/profile';
-                    }
-                });
-                return true;
-            }
-            // 若post参数没正确传入
-            if (typeof (post) === 'undefined') {
-                this.$message.error('呃噢，好像post参数没正确传入哦~');
-                return false;
-            }
-            // 弹出表单填写框
-            this.$alert(`您要投递的岗位是【${post.name}】`, '提示', {
-                confirmButtonText: '确定',
-                callback: action => {
-                    if (action == 'cancel') return;
-                    // 引用相应的岗位object
-                    this.positionSelected = post;
-                    // 填入面试岗位和面试地点到表单里（不可更改）
-                    this.ruleForm.positionName = this.positionSelected.name;
-                    this.ruleForm.place = this.positionSelected.place;
-                    // 关闭表单弹出框
-                    this.deliveryDialogFormVisible = true;
+            this.isLogined((isLogined) => {
+                if (!isLogined) {
+                    this.$alert('请先登录后操作', '未登录', {
+                        confirmButtonText: '登录',
+                        callback: action => {
+                            this.loginDialogFormVisible = true;
+                        }
+                    });
+                } else {
+                    this.hasCV((hasCV) => {
+                        // 若未有简历
+                        if (!hasCV) {
+                            this.$alert('请先进入个人中心创建简历', '未创建简历', {
+                                confirmButtonText: '转至个人中心',
+                                callback: action => {
+                                    window.location.href = '/profile.html';
+                                }
+                            });
+                        } else {
+                            // 若post参数没正确传入
+                            if (typeof (post) === 'undefined') {
+                                this.$message.error('呃噢，好像post参数没正确传入哦~');
+                                return;
+                            }
+                            // 弹出表单填写框
+                            this.$alert(`您要投递的岗位是【${post.name}】`, '提示', {
+                                confirmButtonText: '确定',
+                                callback: action => {
+                                    if (action == 'cancel') return;
+                                    // 引用相应的岗位object
+                                    this.positionSelected = post;
+                                    // 填入面试岗位和面试地点到表单里（不可更改）
+                                    this.ruleDeliveryForm.positionName = this.positionSelected.name;
+                                    this.ruleDeliveryForm.place = this.positionSelected.place;
+                                    // 关闭表单弹出框
+                                    this.deliveryDialogFormVisible = true;
+                                }
+                            });
+                        }
+                    });
                 }
             });
-            return true;
         },
         // 判断是否登录
-        isLogined() {
-
-            return true;
+        isLogined(callback) {
+            axios
+                .get('/api/user/islogined')
+                .then(response => {
+                    var data = response.data;
+                    if (data.state == 'success') {
+                        callback(data.isLogined);
+                    } else if (data.state == 'fail') {
+                        this.$message.error('请求判断是否已登录失败，原因未知');
+                    }
+                })
+                .catch(error => this.$message.error(error))
+                .finally(() => this.loading = false)
         },
-        hasCV() {
-            return true;
+        hasCV(callback) {
+            axios
+                .get('/api/user/hascv')
+                .then(response => {
+                    var data = response.data;
+                    if (data.state == 'success') {
+                        callback(data.hasCV);
+                    } else if (data.state == 'fail') {
+                        this.$message.error('请求判断是否已有简历，原因未知');
+                    }
+                })
+                .catch(error => this.$message.error(error))
+                .finally(() => this.loading = false)
         },
         submitDeliveryForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    this.$message({
-                        message: '恭喜你，投递成功！',
-                        type: 'success'
-                    });
-                    this.deliveryDialogFormVisible = false;
-                    window.location.href = '/profile';
+                    axios
+                        .post('/api/user/deliver', {
+                            name: this.ruleDeliveryForm.name,
+                            positionName: this.ruleDeliveryForm.positionName,
+                            place: this.ruleDeliveryForm.place, // 其实用不上
+                            freeTime: this.ruleDeliveryForm.freeTime,
+                            remark: this.ruleDeliveryForm.remark
+                        })
+                        .then((response) => {
+                            console.log('投递ajax返回了');
+                            var data = response.data;
+                            if (data.state == 'success') {
+                                this.$message({
+                                    message: '恭喜你，投递成功！',
+                                    type: 'success'
+                                });
+                                this.deliveryDialogFormVisible = false;
+                                window.setTimeout(() => (window.location.href = '/profile.html'), 2000);
+                            } else if (data.state == 'fail') {
+                                this.$message({
+                                    message: data.errMsg,
+                                    type: 'warning'
+                                });
+                            } else {
+                                this.$message.error('未知错误');
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            this.$message.error(error);
+                        })
+                        .finally(() => this.loading = false);
                 } else {
                     this.$message.error('哦噢，好像投递失败了~');
                     return false;
                 }
             });
         },
+        // 登录
         submitLoginForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
@@ -167,9 +234,9 @@ var app = new Vue({
                                     message: '恭喜你，登录成功！',
                                     type: 'success'
                                 });
-                                token = data.token
+                                this.onLogined = true;
                                 this.loginDialogFormVisible = false;
-                                // window.location.href = '/profile';
+                                // window.location.href = '/profile.html';
                             } else if (data.state == 'fail') {
                                 this.$message({
                                     message: data.errMsg,
@@ -192,37 +259,3 @@ var app = new Vue({
         }
     }
 });
-
-// axios拦截器
-// 拦截请求，给所有的请求都带上token
-axios.interceptors.request.use(request => {
-    const matrixcv_jwt_token = window.localStorage.getItem('matrixcv_jwt_token');
-    if (matrixcv_jwt_token) {
-        // 此处有坑，在此记录request.headers['Authorization']
-        // 必须通过此种形式设置Authorization，否则后端即使收到字段也会出现问题，返回401,
-        // request.headers.Authorization或request.headers.authorization可以设置成功，
-        // 浏览器查看也没有任何问题，但是在后端会报401并且后端一律只能拿到小写的，
-        // 也就是res.headers.authorization，后端用大写获取会报undefined.
-        request.headers['Authorization'] = `Bearer ${matrixcv_jwt_token}`;
-    }
-    return request;
-});
-
-// 拦截响应，遇到token不合法则报错
-axios.interceptors.response.use(
-    response => {
-        if (response.data.token) {
-            console.log('token:', response.data.token);
-            window.localStorage.setItem('matrixcv_jwt_token', response.data.token);
-        }
-        return response;
-    },
-    error => {
-        const errRes = error.response;
-        if (errRes.status === 401) {
-            window.localStorage.removeItem('matrixcv_jwt_token');
-            this.$message.error('Jwt验证错误');
-        }
-        // 返回接口返回的错误信息
-        return Promise.reject(error.message);
-    });

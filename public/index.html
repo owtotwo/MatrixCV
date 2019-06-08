@@ -18,8 +18,11 @@
                     <el-image style="width: 140px; height: 58px" src="images/logo.png" fit="contain">
                     </el-image>
                 </el-menu-item>
-                <el-menu-item index="4" style="float: right;">
+                <el-menu-item v-if="onLogined == false" index="4" style="float: right;">
                     <el-link @click="loginDialogFormVisible = true" :underline="false">登录</el-link>
+                </el-menu-item>
+                <el-menu-item v-if="onLogined == true" index="4" style="float: right;">
+                    <el-link href="/profile.html" :underline="false">个人中心</el-link>
                 </el-menu-item>
                 <el-menu-item index="3" style="float: right;" disabled>关于我们</el-menu-item>
                 <el-menu-item index="2" style="float: right;">招聘岗位</el-menu-item>
@@ -141,6 +144,9 @@
 
 <!-- 引入crypto-js库（使用其中的MD5模块） -->
 <script src="https://cdn.bootcss.com/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+
+<!-- 处理Json Web Token -->
+<script src="javascripts/tokenHandler.js"></script>
 
 <!-- 本页面的包含Vue内容的Js，放在Vue后面 -->
 <script src="javascripts/index.js"></script>

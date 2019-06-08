@@ -29,9 +29,17 @@ app.use('/api', api);
 // 	});
 // }
 
-app.get('/', function (req, res) {
-	  res.send('Hello World!\n');
+app.get('/', function(req, res, next) {
+    res.location('/index.html');
 });
+
+// app.get('/index', function(req, res, next) {
+// 	res.sendFile('index.html');
+// });
+
+// app.get('/profile', function(req, res, next) {
+// 	res.sendFile('profile.html');
+// });
 
 //定义一个接口，返回token给客户端
 // app.get('/getToken', function(req, res) {
