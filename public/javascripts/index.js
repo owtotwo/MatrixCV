@@ -88,12 +88,15 @@ var app = new Vue({
                 console.log(data);
                 if (data.state == 'success') {
                     this.onLogined = data.isLogined;
+                    if (data.isAdmin) {
+                        window.location.href = '/admin.html';
+                    }
                 } else if (data.state == 'fail') {
                     this.$message.error('从服务器获取登陆状态失败');
                 }
             })
             .catch(error => this.$message.error(error))
-            .finally(() => this.loading = false)
+            .finally(() => this.loading = false);
     },
     methods: {
         // 点击投递按钮后调用，需要在登录的情况下，已有简历，才能弹出 投递表单弹出框
@@ -236,7 +239,10 @@ var app = new Vue({
                                 });
                                 this.onLogined = true;
                                 this.loginDialogFormVisible = false;
-                                // window.location.href = '/profile.html';
+                                if (data.isAdmin == true) {
+                                    window.location.href = '/admin.html';
+                                    return;
+                                }
                             } else if (data.state == 'fail') {
                                 this.$message({
                                     message: data.errMsg,

@@ -7,19 +7,20 @@ const shortid = require('shortid')
 
 const form = {
     "admin": [
+        // 管理员名字用“id”表示，作为唯一索引
         { "id": "Admin", "password": "admin" },
         { "id": "AnotherAdmin", "password": "adminPasswd" }
     ],
     "user": [
         {
-            "username": "UserA", // 唯一
+            "username": "UserA", // 索引：唯一
             "password": "ciphertext", // MD5加密的密文
             "cv": "Xv_I6Vo3v", // 此用户第一个简历id（以后可能会有多个，这里指首个），没有则为空字符串
         },
     ],
     "cv": [
         {
-            "id": "Xv_I6Vo3v", // shortid生成的唯一id
+            "id": "Xv_I6Vo3v", // 索引：shortid生成的唯一id
             "user": "此简历所有者的用户名",
             "content":
             {
@@ -32,13 +33,13 @@ const form = {
                 "校园活动经验": "无",
                 "自身技能": "无",
                 "自我评价": "无",
-                "附件简历": "attachmentId"
+                "附件简历": "一般是以此用户为文件名的zip后缀文件"
             }
         }
     ],
     "delivery": [
         {
-            "id": "Ac_I6Vo3v", // 似乎暂时没用
+            "id": "Ac_I6Vo3v", // 索引：但似乎暂时没用
             "user": "UserA",
             "投递人姓名": "李老八",
             "简历": "cvid",
@@ -52,13 +53,13 @@ const form = {
     ],
     "attachment": [
         {
-            "id": "ABC",
+            "id": "ABC", //索引
             "filepath": "某个/路径/下的文件"
         }
     ],
     "position": [
         {
-            "name": "岗位名称",
+            "name": "岗位名称", // 索引
             "description": "岗位描述",
             "requirement": "岗位要求",
             "place": "面试地点"
@@ -91,6 +92,10 @@ const cvModel = {
             .find({ id: cvid })
             .value();
     },
+    getCvList: function () {
+        return db.get('cv')
+            .value();
+    },
     updateCvFromId: function (cvid, cvContent) {
         db.get('cv')
             .find({ id: cvid })
@@ -109,7 +114,7 @@ const cvModel = {
             .assign({ content: cvContent })
             .write();
     },
-    createCv: function (username, cvContent, attachmentFilePath) {
+    createCv: function (username, cvContent) {
         console.log('username: ', username);
         console.log('createCv: ', cvContent);
         var newCvId = shortid.generate();
@@ -148,7 +153,7 @@ const positionModel = {
 };
 
 const userModel = {
-    isMatched: function (username, password) {
+    isUserMatched: function (username, password) {
         return Boolean(db.get('user')
             .find({ username: username, password: password })
             .value());
@@ -196,14 +201,43 @@ const deliveryModel = {
         return newDeliveryId;
     },
     getDeliveryListFromUser: function (username) {
-        console.log('获取用户'+username+'的投递列表');
+        console.log('获取用户' + username + '的投递列表');
         var deliveryList = db.get('delivery')
-        .filter({ user: username })
-        .value();
+            .filter({ user: username })
+            .value();
         console.log(deliveryList);
         return deliveryList;
+    },
+    getAllDeliveries: function () {
+        return db.get('delivery')
+            .value();
+    },
+    transfer: function (deliveryId, timestamp) {
+        return db.get('delivery')
+            .find({ id: deliveryId })
+            .assign({ "面试时间": timestamp, "环节状态": '面试中' })
+            .write();
+    },
+    setState: function (deliveryId, state) {
+        return db.get('delivery')
+            .find({ id: deliveryId })
+            .assign({ "环节状态": state })
+            .write();
     }
 }
+
+const adminModel = {
+    isAdminExisted: function (username) {
+        return Boolean(db.get('admin')
+            .find({ id: username })
+            .value());
+    },
+    isAdminMatched: function (username, password) {
+        return Boolean(db.get('admin')
+            .find({ id: username, password: password })
+            .value());
+    },
+};
 // // Add a user
 // db.get('users')
 //   .push({ id: 1, title: 'lowdb is awesome'})
@@ -221,5 +255,6 @@ module.exports = {
     cv: cvModel,
     position: positionModel,
     user: userModel,
-    delivery: deliveryModel
+    delivery: deliveryModel,
+    admin: adminModel
 };

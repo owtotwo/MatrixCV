@@ -29,6 +29,10 @@
                                 <i class="el-icon-news"></i>
                                 <span slot="title">岗位描述</span>
                             </el-menu-item>
+                            <el-menu-item index="3" @click="logout">
+                                <i class="el-icon-user"></i>
+                                <span slot="title">登出</span>
+                            </el-menu-item>
                         </el-menu>
                     </el-col>
                     <el-card>
@@ -94,33 +98,53 @@
                                                             <el-form-item label="自我评价">
                                                                 <span>{{ detials.row.evaluation }}</span>
                                                             </el-form-item>
+                                                            <el-form-item label="面试地点">
+                                                                <span>{{ detials.row.place }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="用户空闲时间">
+                                                                <span>{{ detials.row.freeTime }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="用户备注">
+                                                                <span>{{ detials.row.remark }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="面试时间">
+                                                                <span>{{ detials.row.interviewTime }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item v-if="detials.row.attachment" label="附件下载">
+                                                                <el-button size="mini" round
+                                                                    @click="downloadAttachment(detials.row.attachment)">
+                                                                    {{ detials.row.attachment }}
+                                                                </el-button>
+                                                            </el-form-item>
                                                         </el-form>
                                                     </template>
                                                 </el-table-column>
-                                                <el-table-column prop="id" label="ID" width="100">
+                                                <el-table-column prop="id" label="ID" width="120">
                                                 </el-table-column>
-                                                <el-table-column prop="name" label="投递人姓名" width="120">
+                                                <el-table-column prop="name" label="投递人姓名" width="100">
                                                 </el-table-column>
                                                 <el-table-column prop="position" label="投递岗位" sortable width="120"
                                                     column-key="position"
                                                     :filters="[{text: '前端', value: '前端'}, {text: '服务端', value: '服务端'}, {text: '后台', value: '后台'}, {text: '产品经理', value: '产品经理'}, {text: '设计师', value: '设计师'}, {text: '运营', value: '运营'}]"
                                                     :filter-method="filterHandler">
                                                 </el-table-column>
-                                                <el-table-column prop="time" label="投递时间" width="180">
+                                                <el-table-column prop="deliveryTime" label="投递时间" width="180">
                                                 </el-table-column>
                                                 <el-table-column prop="state" label="环节状态" sortable
                                                     :filters="[{ text: '待处理', value: '待处理' }, { text: '面试中', value: '面试中' }]"
                                                     :filter-method="filterState" filter-placement="bottom-end">
                                                     <template slot-scope="scope">
-                                                        <el-button
-                                                            :type="scope.row.state === '待处理' ? 'primary' : 'success'"
-                                                            :plain="scope.row.state === '面试中'"
-                                                            :disabled="scope.row.state === '面试中'"
-                                                            @click="scope.row.state === '待处理' ? window.alert('待处理') : window.alert('面试中')"
-                                                            size="mini">
-                                                            {{scope.row.state}}
-                                                        </el-button>
-                                                        <!-- disable-transitions -->
+                                                        <el-tooltip class="item" effect="dark"
+                                                            :content="scope.row.state === '待处理' ? '为其选择面试时间' : '确认面试通过情况'"
+                                                            placement="right">
+                                                            <el-button
+                                                                :type="scope.row.state === '待处理' ? 'primary' : 'success'"
+                                                                :plain="scope.row.state === '面试中'"
+                                                                @click="scope.row.state === '待处理' ? handlePendingClick(scope.row.id) : handleCompleteClick(scope.row.id)"
+                                                                size="mini">
+                                                                {{scope.row.state}}
+                                                            </el-button>
+                                                        </el-tooltip>
                                                     </template>
                                                 </el-table-column>
                                             </el-table>
@@ -161,19 +185,37 @@
                                                             <el-form-item label="自我评价">
                                                                 <span>{{ detials.row.evaluation }}</span>
                                                             </el-form-item>
+                                                            <el-form-item label="面试地点">
+                                                                <span>{{ detials.row.place }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="用户空闲时间">
+                                                                <span>{{ detials.row.freeTime }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="用户备注">
+                                                                <span>{{ detials.row.remark }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item label="面试时间">
+                                                                <span>{{ detials.row.interviewTime }}</span>
+                                                            </el-form-item>
+                                                            <el-form-item v-if="detials.row.attachment" label="附件下载">
+                                                                <el-button size="mini" round
+                                                                    @click="downloadAttachment(detials.row.attachment)">
+                                                                    {{ detials.row.attachment }}
+                                                                </el-button>
+                                                            </el-form-item>
                                                         </el-form>
                                                     </template>
                                                 </el-table-column>
                                                 <el-table-column prop="id" label="ID" width="100">
                                                 </el-table-column>
-                                                <el-table-column prop="name" label="投递人姓名" width="120">
+                                                <el-table-column prop="name" label="投递人姓名" width="100">
                                                 </el-table-column>
                                                 <el-table-column prop="position" label="投递岗位" sortable width="120"
                                                     column-key="position"
                                                     :filters="[{text: '前端', value: '前端'}, {text: '服务端', value: '服务端'}, {text: '后台', value: '后台'}, {text: '产品经理', value: '产品经理'}, {text: '设计师', value: '设计师'}, {text: '运营', value: '运营'}]"
                                                     :filter-method="filterHandler">
                                                 </el-table-column>
-                                                <el-table-column prop="time" label="投递时间" width="180">
+                                                <el-table-column prop="deliveryTime" label="投递时间" width="180">
                                                 </el-table-column>
                                                 <el-table-column prop="state" label="环节状态" sortable
                                                     :filters="[{ text: '已结束', value: '已结束' }, { text: '已通过', value: '已通过' }]"
@@ -181,7 +223,6 @@
                                                     <template slot-scope="scope">
                                                         <el-button
                                                             :type="scope.row.state === '已结束' ? 'info' : 'warning'"
-                                                            @click="scope.row.state === '已结束' ? undefined : undefined"
                                                             size="mini" disabled plain>
                                                             {{scope.row.state}}
                                                         </el-button>
@@ -193,15 +234,46 @@
                                 </el-tabs>
                             </template>
                         </el-row>
-                        <!-- <el-row>
-                            <div id="pagination">
-                                <el-pagination layout="prev, pager, next" page-size="10" :total="500">
-                                </el-pagination>
-                            </div>
-                        </el-row> -->
                     </el-card>
                 </el-row>
             </el-main>
+            <!-- 投递表单弹出框 -->
+            <el-dialog title="面试安排" :visible.sync="timeSettingDialogFormVisible">
+                <el-form :model="interviewTimeSettingForm">
+                    <el-form-item label="面试岗位" prop="position">
+                        <el-input v-model="interviewTimeSettingForm.position" :readonly="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="面试地点" prop="place">
+                        <el-input v-model="interviewTimeSettingForm.place" :readonly="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="用户空闲时间" prop="freeTime">
+                        <el-input v-model="interviewTimeSettingForm.freeTime" :readonly="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="用户备注" prop="remark">
+                        <el-input type="textarea" v-model="interviewTimeSettingForm.remark" :readonly="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="请确定面试时间">
+                        <el-col :span="7">
+                            <el-date-picker type="date" placeholder="选择日期" v-model="interviewTimeSettingForm.date1"
+                                style="width: 100%;">
+                            </el-date-picker>
+                        </el-col>
+                        <el-col :span="1">
+                            <div style="padding: 1px;"></div>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-time-picker placeholder="选择时间" v-model="interviewTimeSettingForm.date2"
+                                style="width: 100%;">
+                            </el-time-picker>
+                        </el-col>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <span style="margin: 0 30px">* 一经提交不能再修改</span>
+                    <el-button @click="timeSettingDialogFormVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="submitTimeSettingForm">流 转</el-button>
+                </div>
+            </el-dialog>
             <div class="line"></div>
             <el-footer id="page-footer">
                 <small>&copy; Copyright 2019 by owtotwo</small>

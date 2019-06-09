@@ -55,9 +55,13 @@ body {
 
 .demo-table-expand .el-form-item {
     margin-right: 0;
-        margin-bottom: 0;
-width: 50%;
+    margin-bottom: 0;
+    width: 80%;
 }
+
+/* .demo-table-expand span {
+    width: 100%;
+} */
 
 .line {
     height: 1px;

@@ -104,7 +104,10 @@
                     </div>
                 </el-dialog>
 
-                <el-button type="text" @click="loginDialogFormVisible = true">打开嵌套表单的 Dialog</el-button>
+                <el-tooltip class="item" effect="dark" content="还没有实现哦" placement="top">
+                    <el-button type="text">点我联系Matrix</el-button>
+                </el-tooltip>
+
                 <!-- 登录表单弹出框 -->
                 <el-dialog title="登录" :visible.sync="loginDialogFormVisible">
                     <el-form :model="ruleLoginForm" :rules="loginFormRules" ref="ruleLoginForm" label-width="110px">
@@ -117,7 +120,7 @@
                     </el-form>
                     <div slot="footer" class="dialog-footer">
                         <el-button @click="loginDialogFormVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="submitLoginForm('ruleLoginForm')">投 递</el-button>
+                        <el-button type="primary" @click="submitLoginForm('ruleLoginForm')">登 录</el-button>
                     </div>
                 </el-dialog>
             </el-main>
