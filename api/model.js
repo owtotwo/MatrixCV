@@ -1,3 +1,4 @@
+const config = require('../config');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 const adapter = new FileSync('db.json');
@@ -5,9 +6,10 @@ const db = low(adapter);
 
 const shortid = require('shortid')
 
+// json数据库的格式样例
 const form = {
     "admin": [
-        // 管理员名字用“id”表示，作为唯一索引
+        // 管理员名字用“id”表示，作为唯一索引，注意密码暂定为md5处理后的哈希值而非明文
         { "id": "Admin", "password": "admin" },
         { "id": "AnotherAdmin", "password": "adminPasswd" }
     ],
@@ -51,12 +53,6 @@ const form = {
             "环节状态": "待处理/面试中/已结束/已通过"
         }
     ],
-    "attachment": [
-        {
-            "id": "ABC", //索引
-            "filepath": "某个/路径/下的文件"
-        }
-    ],
     "position": [
         {
             "name": "岗位名称", // 索引
@@ -68,14 +64,7 @@ const form = {
 };
 
 // Set some defaults (required if your JSON file is empty)
-db.defaults({
-    admin: [{ 'id': 'admin', 'password': 'admin' }],
-    user: [],
-    cv: [],
-    delivery: [],
-    attachment: [],
-    position: []
-}).write();
+db.defaults(config.defaultDatabaseContent).write();
 
 const cvModel = {
     getCvFromId: function (cvid) {
@@ -238,18 +227,6 @@ const adminModel = {
             .value());
     },
 };
-// // Add a user
-// db.get('users')
-//   .push({ id: 1, title: 'lowdb is awesome'})
-//   .write()
-
-// // Set a user using Lodash shorthand syntax
-// db.set('user.name', 'typicode')
-//   .write()
-
-// // Increment count
-// db.update('count', n => n + 1)
-//   .write()
 
 module.exports = {
     cv: cvModel,

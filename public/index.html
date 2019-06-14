@@ -35,7 +35,6 @@
             <div class="block">
                 <el-carousel id="ads-carousel" height="250px">
                     <el-carousel-item v-for="item in 4" :key="item">
-                        <!-- <h3 class="small">{{ item }}</h3> -->
                     </el-carousel-item>
                 </el-carousel>
             </div>
@@ -74,9 +73,6 @@
                         </el-tab-pane>
                     </el-tabs>
                 </template>
-                <!-- Form -->
-                <!-- <el-button type="text" @click="deliveryDialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
-
                 <!-- 投递表单弹出框 -->
                 <el-dialog title="面试安排" :visible.sync="deliveryDialogFormVisible">
                     <el-form :model="ruleDeliveryForm" :rules="deliveryFormRules" ref="ruleDeliveryForm"

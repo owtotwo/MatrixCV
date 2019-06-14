@@ -453,17 +453,6 @@ var app = new Vue({
             })
             .catch(error => this.$message.error(error))
             .finally(() => this.loading = false);
-            // axios
-            //     .get(`/api/admin/attachment/download/${fileName}`)
-            //     .then(response => {
-            //         console.log(response);
-            //         console.log(response.data);
-            //         let blob = new Blob([response.data]),
-            //             url = window.URL.createObjectURL(blob);
-            //         window.open(url) // Mostly the same, I was just experimenting with different approaches, tried link.click, iframe and other solutions
-            //     })
-            //     .catch(error => this.$message.error(error))
-            //     .finally(() => this.loading = false);
         },
         logout() {
             window.localStorage.removeItem('matrixcv_json_web_token');
