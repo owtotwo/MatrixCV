@@ -285,11 +285,15 @@ var app = new Vue({
                                 console.log(`注意！投递人姓名${d["投递人姓名"]}与简历中的姓名${cvContent["姓名"]}不匹配`);
                                 console.log('仅显示投递人姓名，简历姓名不显示');
                             }
+                            var interviewTime = "未确定";
+                            if (d["面试时间"] !== "未确定" && d["面试时间"] !== "") {
+                                interviewTime = this.timestampToYyyyMMddhhmmss(d["面试时间"]);
+                            }
                             tableDataRef.push({
                                 id: d["id"],
                                 name: d["投递人姓名"],
                                 position: d["投递岗位"],
-                                deliveryTime: this.timestampToYyyyMMddhhmmss(d["投递时间"]),
+                                deliveryTime: d["投递时间"] && this.timestampToYyyyMMddhhmmss(d["投递时间"]),
                                 state: d["环节状态"],
                                 grade: cvContent["年级"],
                                 college: cvContent["院系"],
@@ -302,7 +306,7 @@ var app = new Vue({
                                 place: d["面试地点"],
                                 freeTime: d["近期空闲时间"],
                                 remark: d["备注"],
-                                interviewTime: d["面试时间"],
+                                interviewTime: interviewTime,
                                 attachment: cvContent["附件简历"]
                             });
                         }
