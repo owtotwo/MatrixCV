@@ -1,6 +1,5 @@
 var express = require('express');
 
-// const jwt= require('jsonwebtoken');
 var expressJwt = require('express-jwt');
 var config = require('./config');
 
@@ -10,7 +9,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var api = require('./api/api');
-// var uploader = require('./uploader');
 
 var secretKey = config.secretKey;
 
