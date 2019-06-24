@@ -19,4 +19,6 @@ Then open `http://localhost:3000/`.
 
 ### Document
 
-[Here](https://owtotwo.github.io/MatrixCV-Docs/)
+[MatrixCV-Docs](https://owtotwo.github.io/MatrixCV-Docs/)
+
+[一学分课程SE-308相关文档](https://owtotwo.github.io/MatrixCV-Docs/%E8%AF%BE%E7%A8%8BSE-308%E7%9B%B8%E5%85%B3.html)
