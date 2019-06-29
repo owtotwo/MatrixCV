@@ -332,7 +332,7 @@ var app = new Vue({
             console.log(file);
             console.log('file type is', file.type);
             console.log('file size is', file.size);
-            const isZip = file.type === 'application/zip';
+            const isZip = file.type === 'application/zip' || file.type === 'application/x-zip-compressed';
             const isLessthan2M = (file.size / 1024 / 1024) < 2;
             if (!isZip) {
                 this.$message.error('上传文件只能是zip格式!');
